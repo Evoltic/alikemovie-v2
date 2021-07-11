@@ -1,0 +1,17 @@
+[
+  {
+    "slug": "home",
+    "route": "/$",
+    "source": "pages/home"
+  },
+  {
+    "slug": "movie",
+    "route": "/movies/[^/]+$",
+    "source": "pages/movie"
+  },
+  {
+    "slug": "404",
+    "route": "/404$",
+    "source": "pages/404"
+  }
+]

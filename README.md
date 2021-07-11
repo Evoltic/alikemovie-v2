@@ -4,7 +4,117 @@ A monorepo for both frontend and backend code.
 
 # The frontend
 
-under development. is not ready yet.
+This is a typical Single Page Application, but with prerender.
+The type of the content that would be prerendered is the skeleton - the parts
+that always static (titles of sections, navbar, footer, placeholders etc).  
+There is no Server Side Rendering.
+
+## .env
+
+- WEBSOCKET_API_URL
+
+## UI Components
+
+Recommended to getting started with understanding what is the BEM:
+https://en.bem.info/methodology/quick-start/
+
+So, the core BEM principle is:  
+A block is a combination of elements.
+An element can't belong to an element - elements belong to a block.
+A block could belong to another block, in this case - the children block
+is an element of the parent block and at the same time a block itself.
+
+Let's call a block a component. A component could include only elements, but
+also it could consist of other components. A page is also a component, and
+typically it's a combination of different components, and those components are
+elements of the page.
+
+### Self-sufficiency
+
+Every component is self-sufficiency, meaning it is always ready to be shown,
+even if a data for the component is not ready yet. Places for that data
+are placeholders. When data is ready - placeholders replaced by that data.
+
+## Threads and states
+
+The app has only two types of states:
+- UI state, e.g. ```{ isMenuOpen: false, theme: 'dark' }```
+- Any other state, e.g. ```{ movies: ['Avengers', 'Ben 10'], authToken: 'zxc' }```
+
+UI state exists and managed only in the main thread.
+
+Any other state exists and managed in the second thread
+(read: off the main thread).
+The main thread could listen for the second thread state changes.
+
+The workflow with a worker:  
+worker (1) - worker wrapper (2) - middleware (3) - initiator (4)
+
+### 1. Worker (/src/\*\*/*.worker.js)
+
+Methods that should be run inside a worker are defined there.
+
+### 2. Worker wrapper (/src/function/workerWrapper/makeWorker.js)
+
+Each worker is wrapped by the worker wrapper to take off such things from a
+.worker.js file:
+
+- creating a new context for every initiator;
+- providing a set of available methods of a worker to an initiator;
+- managing a worker public state;
+
+Each initiator has an independent worker context. 
+
+### 3. Middleware (/src/function/workerWrapper/useWorker.js)
+
+The middleware is a bridge between a worker (wrapped by the worker wrapper) 
+and an initiator. 
+
+The main role of the bridge is just to 
+make communication with the worker easier.  
+It provides:
+- a set of worker methods, defined in a .worker.js file;
+- "subscribe to worker state" function;
+- "destroy the context" function (if the initiator no longer needs a worker).
+
+### 3. Initiator
+
+An initiator could be a function, component, etc. 
+anything that needs to call a worker method.
+
+## Files loading (html, css, js)
+
+Files loading behaviour / splitting / grouping / etc must be handled
+by a tool on the app "build" process. The tool is webpack.
+
+### Grouping js/css
+
+A page has two types of files that needed to be downloaded
+to show that page: JavaScript and CSS.
+HTML is also required, but only on first load, because it's an SPA.
+
+The app consists of shared
+across different pages components / functions / styles.
+So, the best way could be:
+
+- If some part of code is used only on one page - the part should be included
+  in one large "page file".
+
+- If some part of code is used on more than one page - it's a shared piece,
+  so it couldn't be added to a "page file"; otherwise, the piece will be
+  downloaded x times, where x is a number of pages containing the piece.
+
+- There could be a huge amount of pieces, so a good idea would be to group
+  that pieces. If "page 1" uses "piece A" and "piece B" and "page 2" uses
+  the same pieces, those pieces could be grouped together. The combination
+  of the pieces could be described as "page 1 and page 2 pieces".
+
+*a piece is a .js or .css file. only the same file types could be groped.
+so, a page has two "page files": .js and .css.
+
+### Caching
+
+Todo 
 
 # The backend
 
