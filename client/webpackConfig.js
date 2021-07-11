@@ -37,9 +37,6 @@ const mainConfig = {
       {}
     )
   },
-  externals: {
-    ReactDOMServer: 'react-dom/server',
-  },
   optimization: {
     splitChunks: {
       filename: '[name].[contenthash].js',
