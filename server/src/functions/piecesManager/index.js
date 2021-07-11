@@ -33,7 +33,7 @@
 class PiecesManager {
   constructor(schema, listeners = {}) {
     this.listeners = listeners
-    this.groups = { 'piece:value': [], 'piece:piece': [] }
+    this.groups = { 'piece:value': {}, 'piece:piece': {} }
 
     const { controls, createdPieces } = this.createPieces(schema)
 
@@ -54,11 +54,11 @@ class PiecesManager {
 
   supplyGroup(key) {
     this.listeners[key](this.groups[key])
-    this.groups[key] = []
+    this.groups[key] = {}
   }
 
   handleSetValue(pieceId, value, isLastInGroup = true) {
-    this.groups['piece:value'].push({ [pieceId]: value })
+    this.groups['piece:value'][pieceId] = value
     if (isLastInGroup) this.supplyGroup('piece:value')
   }
 
@@ -67,7 +67,7 @@ class PiecesManager {
 
     const map = this.mapKeyWithId(createdPieces, Array.isArray(schema))
 
-    this.groups['piece:piece'].push({ [pieceId]: map })
+    this.groups['piece:piece'][pieceId] = map
     if (isLastInGroup) this.supplyGroup('piece:piece')
 
     return controls

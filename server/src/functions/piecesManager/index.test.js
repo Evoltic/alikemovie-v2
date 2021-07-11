@@ -133,14 +133,14 @@ describe('/src/functions', function() {
       // expecting "3" because:
       // 2 setValue calls were with the flag to group, the third - without,
       // so the first two are grouped with the third, so the total is 2 + 1 = 3.
-      expect(calls[calls.length - 1].data.length).to.be.eql(3)
+      expect(Object.keys(calls[calls.length - 1].data).length).to.be.eql(3)
 
       elements[1]
         .clarify({ exampleKey: Number }, false)
         .exampleKey.setValue(12345, false)
 
-      expect(calls[calls.length - 2].data.length).to.be.eql(2)
-      expect(calls[calls.length - 1].data.length).to.be.eql(1)
+      expect(Object.keys(calls[calls.length - 2].data).length).to.be.eql(2)
+      expect(Object.keys(calls[calls.length - 1].data).length).to.be.eql(1)
 
       expect(calls.length).to.be.eql(4)
     })
