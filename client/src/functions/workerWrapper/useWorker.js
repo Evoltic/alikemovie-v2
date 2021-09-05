@@ -1,30 +1,32 @@
 // inside main thread
 
-class WorkerManager {
-  constructor() {
-    this.workers = {}
+class ExtendedWorker {
+  constructor(getWorker, terminateWorker) {
     this.nextCallId = 0
+
+    this.worker = getWorker()
+    this.terminateWorker = terminateWorker || (() => this.worker.terminate())
   }
 
-  sendMessage(worker, message, callBackOnResponse) {
+  sendMessage(message, callBackOnResponse) {
     const callId = this.nextCallId
     this.nextCallId++
 
-    worker.postMessage({ ...message, callId })
+    this.worker.postMessage({ ...message, callId })
 
     const listener = ({ data = {} }) => {
       if (data.callId !== callId) return
       callBackOnResponse(data.error, data.result)
     }
-    worker.addEventListener('message', listener)
+    this.worker.addEventListener('message', listener)
 
-    return () => worker.removeEventListener('message', listener)
+    return () => this.worker.removeEventListener('message', listener)
   }
 
-  sendMessagePromisified(worker, message) {
+  sendMessagePromisified(message) {
     // notice: all worker responses except the first will be ignored
     return new Promise((resolve, reject) => {
-      const unsubscribe = this.sendMessage(worker, message, (err, res) => {
+      const unsubscribe = this.sendMessage(message, (err, res) => {
         unsubscribe()
         if (err) reject(err)
         else resolve(res)
@@ -32,60 +34,47 @@ class WorkerManager {
     })
   }
 
-  getWorker(workerPath) {
-    if (this.workers[workerPath]) return this.workers[workerPath]
-
-    let worker = new Worker(workerPath)
-    worker.terminate = () => {
-      worker.terminate()
-      delete this.workers[workerPath]
-    }
-
-    return (this.workers[workerPath] = worker)
-  }
-
-  async createWorkerContext(worker) {
-    const contextId = await this.sendMessagePromisified(worker, {
-      activityName: 'createContext'
+  async createWorkerContext()  {
+    const contextId = await this.sendMessagePromisified({
+      activityName: 'createContext',
     })
 
     const destroyContext = async () => {
-      const contextsLeft = await this.sendMessagePromisified(worker, {
+      const contextsLeft = await this.sendMessagePromisified({
         activityName: 'destroyContext',
-        contextId
+        contextId,
       })
-      if (contextsLeft === 0) worker.terminate()
+      if (contextsLeft === 0) this.terminateWorker()
     }
 
     return { contextId, destroyContext }
   }
 
-  async getWorkerMethods(worker, contextId) {
-    const workerMethodsList = await this.sendMessagePromisified(worker, {
-      activityName: 'getMethodsList'
+  async getWorkerMethods(contextId) {
+    const workerMethodsList = await this.sendMessagePromisified({
+      activityName: 'getMethodsList',
     })
 
     let methods = {}
     for (const methodName of workerMethodsList) {
       methods[methodName] = (...args) =>
-        this.sendMessagePromisified(worker, {
+        this.sendMessagePromisified({
           activityName: 'callWorkerMethod',
           methodName,
           contextId,
-          args
+          args,
         })
     }
     return methods
   }
 
-  async subscribeToWorkerPublicState(worker, contextId, subscriber) {
+  async subscribeToWorkerPublicState(contextId, subscriber) {
     let listenerId
 
     const removeMessageListener = this.sendMessage(
-      worker,
       {
         activityName: 'subscribeToPublicState',
-        contextId
+        contextId,
       },
       (err, { type, v } = {}) => {
         if (err) subscriber(err)
@@ -95,10 +84,10 @@ class WorkerManager {
     )
 
     const unsubscribeFromWorkerPublicState = async () => {
-      return this.sendMessagePromisified(worker, {
+      return this.sendMessagePromisified({
         activityName: 'unsubscribeFromPublicState',
         contextId,
-        listenerId
+        listenerId,
       })
     }
 
@@ -108,25 +97,54 @@ class WorkerManager {
     }
   }
 
-  async useWorker(workerPath) {
-    const worker = await this.getWorker(workerPath)
+  async useWorker() {
+    const { contextId, destroyContext } = await this.createWorkerContext()
 
-    const { contextId, destroyContext } = await this.createWorkerContext(worker)
+    const workerMethods = await this.getWorkerMethods(contextId)
 
-    const workerMethods = await this.getWorkerMethods(worker, contextId)
-
-    const subscribeToWorkerPublicState = subscriber =>
-      this.subscribeToWorkerPublicState(worker, contextId, subscriber)
+    const subscribeToWorkerPublicState = (subscriber) =>
+      this.subscribeToWorkerPublicState(contextId, subscriber)
 
     return {
       ...workerMethods,
       destroyContext,
-      subscribeToWorkerPublicState
+      subscribeToWorkerPublicState,
     }
   }
 }
 
-const workerManager = new WorkerManager()
-const useWorker = (...args) => workerManager.useWorker(...args)
+class WorkersPool {
+  constructor() {
+    this.workers = {}
+  }
 
-export { useWorker, WorkerManager }
+  manage(workerPath) {
+    return {
+      getWorker: () => {
+        if (this.workers[workerPath]) {
+          this.workers[workerPath].users++
+          return this.workers[workerPath].itself
+        }
+
+        this.workers[workerPath] = {
+          itself: new Worker(workerPath),
+          users: 1,
+        }
+        return this.workers[workerPath].itself
+      },
+      terminateWorker: () => {
+        this.workers[workerPath].users--
+        if (this.workers[workerPath].users === 0) {
+          this.workers[workerPath].itself.terminate()
+          delete this.workers[workerPath]
+        }
+      },
+    }
+  }
+}
+const workersPool = new WorkersPool()
+
+export const useWorker = async (workerPath) => {
+  const { getWorker, terminateWorker } = workersPool.manage(workerPath)
+  return new ExtendedWorker(getWorker, terminateWorker).useWorker()
+}
