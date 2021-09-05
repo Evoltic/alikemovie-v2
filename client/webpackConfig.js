@@ -4,7 +4,7 @@ const Dotenv = require('dotenv-webpack')
 const glob = require('glob')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ReactDOMServer = require('react-dom/server')
-const pages = require('./src/pages.json')
+const pages = require('./src/pages')
 
 console.time('clearing /dist directory took')
 fs.rmSync(__dirname + '/dist', { recursive: true, force: true })
@@ -24,8 +24,8 @@ const commonConfig = {
     filename: '[name].js',
     clean: false,
     globalObject: 'this',
-    publicPath: '/'
-  }
+    publicPath: '/',
+  },
 }
 
 const mainConfig = {
@@ -33,9 +33,12 @@ const mainConfig = {
   target: 'web',
   entry: {
     ...pages.reduce(
-      (acc, page) => ({ ...acc, [page.source]: { import: `/${page.source}` } }),
+      (acc, page) => ({
+        ...acc,
+        [page.source]: { import: `/${page.entryFile}` },
+      }),
       {}
-    )
+    ),
   },
   optimization: {
     splitChunks: {
@@ -51,8 +54,8 @@ const mainConfig = {
 
       // Size threshold at which splitting is enforced and other restrictions
       // (minRemainingSize, maxAsyncRequests, maxInitialRequests) are ignored.
-      enforceSizeThreshold: 0
-    }
+      enforceSizeThreshold: 0,
+    },
   },
   module: {
     rules: [
@@ -60,14 +63,14 @@ const mainConfig = {
         test: /\.js$/,
         include: path.resolve(__dirname, 'src'),
         use: {
-          loader: 'babel-loader'
-        }
-      }
-    ]
+          loader: 'babel-loader',
+        },
+      },
+    ],
   },
   plugins: [
     ...pages.map(
-      page =>
+      (page) =>
         new HtmlWebpackPlugin({
           filename: `${page.source}.html`,
           chunks: [page.source],
@@ -84,7 +87,8 @@ const mainConfig = {
             }
 
             const renderApp = new Function(
-              'ReactDOMServer', `${jsSource} return this.componentRenderedToHtmlString`
+              'ReactDOMServer',
+              `${jsSource} return this.componentRenderedToHtmlString`
             )
             const componentInHtmlString = renderApp(ReactDOMServer)
 
@@ -95,11 +99,11 @@ const mainConfig = {
                 </body>
               </html>
             `
-          }
+          },
         })
     ),
-    new Dotenv()
-  ]
+    new Dotenv(),
+  ],
 }
 
 const workersConfig = {
@@ -109,10 +113,10 @@ const workersConfig = {
     ...workers.reduce(
       (acc, path) => ({
         ...acc,
-        [path.slice(0, -3)]: { import: `/${path}` }
+        [path.slice(0, -3)]: { import: `/${path}` },
       }),
       {}
-    )
+    ),
   },
   module: {
     rules: [
@@ -120,15 +124,12 @@ const workersConfig = {
         test: /\.js$/,
         include: path.resolve(__dirname, 'src'),
         use: {
-          loader: 'babel-loader'
-        }
-      }
-    ]
+          loader: 'babel-loader',
+        },
+      },
+    ],
   },
-  plugins: [new Dotenv()]
+  plugins: [new Dotenv()],
 }
 
-module.exports = [
-  mainConfig,
-  workersConfig
-]
+module.exports = [mainConfig, workersConfig]

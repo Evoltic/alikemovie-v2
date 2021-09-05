@@ -1,5 +1,5 @@
 const express = require('express')
-const pages = require('./src/pages.json')
+const pages = require('./src/pages')
 
 function serve() {
   const app = express()
@@ -17,4 +17,3 @@ function serve() {
 }
 
 serve()
-
