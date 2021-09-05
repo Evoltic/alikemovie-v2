@@ -2,6 +2,10 @@ import { Pieces } from '/functions/pieces'
 
 // TODO:
 //  implement "websocket ping pong" and reconnect on connection lost;
+//  handle a situation when the worker is removed and the state is loosed:
+//  if the state is loosed and the worker spawned without knowing about
+//  previous incoming responses - then the new worker would assume those
+//  responses for the latest requests and not for the "old".
 
 class ServerApi {
   constructor(handleGeneralError) {
@@ -54,7 +58,7 @@ class ServerApi {
 
   connect() {
     this.socket = new WebSocket(process.env.WEBSOCKET_API_URL)
-    this.socket.onmessage = event => this.handleResponse(event)
+    this.socket.onmessage = (event) => this.handleResponse(event)
   }
 
   async ensureConnectionIsOpen() {
