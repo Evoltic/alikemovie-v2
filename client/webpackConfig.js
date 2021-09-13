@@ -44,7 +44,7 @@ const mainConfig = {
     splitChunks: {
       filename: '[name].[contenthash].js',
 
-      chunks: 'all',
+      chunks: 'initial',
 
       // The minimum times must a module be shared among chunks before splitting.
       minChunks: 1,
