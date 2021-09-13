@@ -41,10 +41,12 @@ const mainConfig = {
     ),
   },
   optimization: {
+    // TODO: if some of pages (not all) use same chunks, group the chunks into one
+
     splitChunks: {
       filename: '[name].[contenthash].js',
 
-      chunks: 'initial',
+      chunks: 'all',
 
       // The minimum times must a module be shared among chunks before splitting.
       minChunks: 1,
@@ -81,7 +83,8 @@ const mainConfig = {
 
             const prefix = htmlWebpackPlugin.files.publicPath
 
-            for (const path of htmlWebpackPlugin.files.js) {
+            const jsFiles = [...htmlWebpackPlugin.files.js].reverse()
+            for (const path of jsFiles) {
               const file = path.replace(new RegExp(`^(${prefix})`), '')
               jsSource += compilation.assets[file].source()
             }
