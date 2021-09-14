@@ -41,8 +41,6 @@ const mainConfig = {
     ),
   },
   optimization: {
-    // TODO: if some of pages (not all) use same chunks, group the chunks into one
-
     splitChunks: {
       filename: '[name].[contenthash].js',
 
