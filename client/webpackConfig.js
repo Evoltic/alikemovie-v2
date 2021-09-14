@@ -3,6 +3,7 @@ const fs = require('fs')
 const Dotenv = require('dotenv-webpack')
 const glob = require('glob')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const ReactDOMServer = require('react-dom/server')
 const pages = require('./src/pages')
 
@@ -66,6 +67,17 @@ const mainConfig = {
           loader: 'babel-loader',
         },
       },
+      {
+        test: /\.scss$/,
+        use: [
+          // creates a CSS file per JS file which contains CSS
+          MiniCssExtractPlugin.loader,
+          // Translates CSS into CommonJS
+          'css-loader',
+          // Compiles Sass to CSS
+          'sass-loader',
+        ],
+      },
     ],
   },
   plugins: [
@@ -103,6 +115,7 @@ const mainConfig = {
           },
         })
     ),
+    new MiniCssExtractPlugin(),
     new Dotenv(),
   ],
 }
