@@ -1,0 +1,145 @@
+@import '/sharedStyles/fonts/title.scss';
+@import '/sharedStyles/fonts/subtitle.scss';
+@import '/sharedStyles/fonts/caption.scss';
+
+.search-box {
+  position: relative;
+  width: 100%;
+
+  &__input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $paddingY $paddingX;
+    box-shadow: 0 0 0 1px $outlineColor;
+    background-color: $backColor0;
+  }
+
+  &_dropdown-closed &__input-container {
+    border-radius: $borderRadius;
+  }
+
+  &_dropdown-open &__input-container {
+    border-radius: $borderRadius $borderRadius 0 0;
+  }
+
+  &__input {
+    @extend .title4;
+    padding: 0;
+    width: 100%;
+    border: none;
+    outline: none;
+
+    &::placeholder {
+      opacity: 0.5;
+    }
+  }
+
+  &__search-icon {
+    width: 3em;
+    height: 3em;
+    fill: $outlineColor;
+  }
+
+  &_dropdown-closed &__dropdown {
+    display: none;
+  }
+
+  &__dropdown {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    transform: translateY(100%);
+    box-shadow: 0 0 0 1px $outlineColor;
+    border-radius: $borderRadius $borderRadius 0 0;
+    background: #fff;
+    max-height: 60vh;
+    overflow: auto;
+  }
+
+  &__loading-line {
+    z-index: 1;
+  }
+
+  &__dropdown-box {
+  }
+
+  &__hint {
+    @extend .subtitle1;
+    padding: $paddingY $paddingX;
+    line-height: 1.5;
+  }
+
+  &__loading-hint {
+    @extend .search-box__hint;
+  }
+
+  &__not-found-hint {
+    @extend .search-box__hint;
+  }
+
+  &__error-hint {
+    @extend .search-box__hint;
+  }
+
+  &__improvement-hint {
+    @extend .search-box__hint;
+  }
+
+  &__hint-label {
+    color: $contrastColor1;
+  }
+
+  &__hint-description {
+    padding-left: $paddingX;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    padding: $paddingY $paddingX;
+    border-bottom: 1px solid $outlineColor;
+    cursor: pointer;
+  }
+
+  &__item:hover {
+    background-color: $backColor1;
+  }
+
+  &__item_active {
+    background-color: $backColor1;
+  }
+
+  &__item-image {
+    height: 4em;
+    width: 4em;
+    min-width: 4em;
+    object-fit: cover;
+    border-radius: $borderRadius;
+  }
+
+  &__item-text {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex: 1;
+    padding: $paddingY $paddingX;
+  }
+
+  &__item-text {
+    max-width: calc(100% - 4em - $paddingX * 2);
+  }
+
+  &__item-title {
+    @extend .subtitle1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__item-year {
+    @extend .caption;
+    color: $frontColor1;
+  }
+}

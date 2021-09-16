@@ -29,7 +29,7 @@ export const SearchBox = attachWorker(
       // TODO: cache the movie, so then on the movie page the movie could be
       //  resolved from the cache
 
-      console.log(this.context)
+      this.closeDropdown()
       this.context.changePage(`/movies/${item.id}`)
     }
 
@@ -47,7 +47,7 @@ export const SearchBox = attachWorker(
       if (this.state.currentItemIndex === this.state.items.length - 1) {
         this.setState({ currentItemIndex: 0 })
       } else {
-        this.setState({ currentItemIndex: this.state.currentItemIndex++ })
+        this.setState({ currentItemIndex: this.state.currentItemIndex + 1 })
       }
     }
 
@@ -57,7 +57,7 @@ export const SearchBox = attachWorker(
       if (this.state.currentItemIndex === 0) {
         this.setState({ currentItemIndex: this.state.items.length - 1 })
       } else {
-        this.setState({ currentItemIndex: this.state.currentItemIndex-- })
+        this.setState({ currentItemIndex: this.state.currentItemIndex - 1 })
       }
     }
 
