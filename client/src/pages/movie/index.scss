@@ -1,0 +1,9 @@
+@import '/sharedStyles/page/page_theme_classic.scss';
+
+.page_movie {
+  @extend .page_theme_classic;
+
+  .navbar {
+    margin-bottom: 3em;
+  }
+}
