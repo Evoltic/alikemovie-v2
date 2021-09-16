@@ -1,0 +1,5 @@
+@import '/sharedStyles/page/page_theme_classic.scss';
+
+.page_home {
+  @extend .page_theme_classic;
+}

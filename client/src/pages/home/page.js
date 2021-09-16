@@ -1,11 +1,7 @@
 import React from 'react'
-import { SearchBox } from '/components/searchBox'
 import { App } from '/components/app'
+import './index.scss'
 
 export default () => {
-  return (
-    <App>
-      <SearchBox />
-    </App>
-  )
+  return <App className="page_home" />
 }
