@@ -1,0 +1,69 @@
+.loading-line {
+  position: relative;
+
+  &__line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 3px;
+    z-index: -1;
+    background: $contrastColor0;
+    border-radius: $borderRadius;
+    transform-origin: right;
+    animation-iteration-count: 1, 1, infinite, 1;
+    animation-delay: 0s, 1s, 2s, 0s;
+    animation-duration: 1s, 1s, 2s, 1s;
+    animation-name: increasing, decreasing, bouncing, disappearing;
+    animation-play-state: paused, paused, paused, paused;
+    animation-timing-function: ease, ease, linear, linear;
+  }
+
+  &_status_loading &__line {
+    animation-play-state: running, running, running, paused;
+  }
+
+  &_status_loaded &__line {
+    animation-play-state: paused, paused, paused, running;
+    animation-fill-mode: none, none, none, forwards;
+  }
+
+  @keyframes increasing {
+    0% {
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+    100% {
+      transform-origin: left;
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes decreasing {
+    0% {
+      transform: scaleX(1);
+    }
+    100% {
+      transform: scaleX(0.1);
+    }
+  }
+
+  @keyframes bouncing {
+    0% {
+      transform: scaleX(0.1) translateX(0%);
+    }
+    50% {
+      transform: scaleX(0.1) translateX(-900%);
+    }
+    100% {
+      transform: scaleX(0.1) translateX(0%);
+    }
+  }
+
+  @keyframes disappearing {
+    to {
+      transform: scaleX(0) translateX(0);
+    }
+  }
+}
