@@ -2,28 +2,49 @@ import React from 'react'
 import { Router } from '/components/router'
 import pages from '/pages'
 
+let isTheOnlyAppCreated = false
+let updateTheOnlyAppState = () => {
+  console.warn(`updateTheOnlyAppState must be defined inside the app`)
+}
+
 class App extends React.Component {
+  constructor(props) {
+    super(props)
+
+    const { children, ...rest } = props
+
+    this.state = { ...rest }
+    updateTheOnlyAppState = (state) => this.setState(state)
+  }
+
   render() {
     return (
-      <div>
-        <nav>navbar</nav>
+      <div className={this.state.className || ''}>
         <Router
           CurrentPage={this.props.children}
           TransitionPage={<p>loading a page...</p>}
           allPages={pages}
         />
-        <footer>footer</footer>
       </div>
     )
   }
 }
 
-let isAppCreated = false
-function AppLayer(props) {
-  if (isAppCreated) return props.children
+class AppLayer extends React.Component {
+  constructor(props) {
+    super(props)
+    const { children, ...rest } = props
 
-  isAppCreated = true
-  return <App>{props.children}</App>
+    this.isThisTheApp = !isTheOnlyAppCreated
+    if (isTheOnlyAppCreated) updateTheOnlyAppState(rest)
+
+    isTheOnlyAppCreated = true
+  }
+
+  render() {
+    const { children, ...rest } = this.props
+    return this.isThisTheApp ? <App {...rest}>{children}</App> : children
+  }
 }
 
 export { AppLayer as App }
