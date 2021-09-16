@@ -48,6 +48,7 @@ class Router extends React.Component {
 
     return (
       <PageContext.Provider value={{ changePage: this.changePage }}>
+        {this.props.Header}
         {this.state.CurrentPage}
       </PageContext.Provider>
     )

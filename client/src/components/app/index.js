@@ -1,6 +1,7 @@
 import React from 'react'
 import { Router } from '/components/router'
 import pages from '/pages'
+import { Navbar } from '/components/navbar'
 
 let isTheOnlyAppCreated = false
 let updateTheOnlyAppState = () => {
@@ -21,6 +22,7 @@ class App extends React.Component {
     return (
       <div className={this.state.className || ''}>
         <Router
+          Header={<Navbar />}
           CurrentPage={this.props.children}
           TransitionPage={<p>loading a page...</p>}
           allPages={pages}
