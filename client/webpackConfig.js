@@ -27,6 +27,9 @@ const commonConfig = {
     globalObject: 'this',
     publicPath: '/',
   },
+  experiments: {
+    asset: true,
+  },
 }
 
 const mainConfig = {
@@ -87,6 +90,10 @@ const mainConfig = {
         test: /\.svg$/,
         use: ['@svgr/webpack'],
       },
+      {
+        test: /\.(png|jpg|gif)$/,
+        type: 'asset/resource',
+      },
     ],
   },
   plugins: [
@@ -116,6 +123,9 @@ const mainConfig = {
 
             return `
               <html>
+                <head>
+                  <meta name="viewport" content="width=device-width, initial-scale=1">
+                </head>
                 <body>
                   <div id="app">${componentInHtmlString}</div>
                 </body>
