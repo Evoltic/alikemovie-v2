@@ -1,0 +1,33 @@
+@import '/sharedStyles/section/section.scss';
+
+.navbar {
+  @extend .section;
+  position: sticky;
+  top: 0.5em;
+  height: 4em;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__content {
+    @extend .section__content;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  &__homepage-link {
+    margin-right: $paddingX;
+  }
+
+  &__homepage-icon {
+    width: 3em;
+    height: 3em;
+    fill: $outlineColor;
+  }
+
+  &__homepage-link:active &__homepage-icon {
+    fill: $frontColor0;
+  }
+}
