@@ -1,0 +1,15 @@
+@import './reset.scss';
+@import './respond/respond.scss';
+@import './variables/variables.scss';
+@import 'https://fonts.googleapis.com/css?family=Roboto';
+
+html {
+  font-size: 10px;
+  color: $frontColor0;
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}

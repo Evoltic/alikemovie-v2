@@ -1,0 +1,13 @@
+.section {
+  display: flex;
+  justify-content: center;
+}
+
+.section__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 $paddingX;
+  width: 100%;
+  max-width: 1310px;
+}

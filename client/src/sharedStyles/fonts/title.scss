@@ -1,0 +1,64 @@
+.title1 {
+  font-weight: 300;
+
+  @include respond-above(sm) {
+    font-size: 2.6em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 2.4em;
+  }
+}
+
+.title2 {
+  font-weight: 300;
+
+  @include respond-above(sm) {
+    font-size: 2.4em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 2.2em;
+  }
+}
+
+.title3 {
+  font-weight: 400;
+
+  @include respond-above(sm) {
+    font-size: 2.2em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 2em;
+  }
+}
+
+.title4 {
+  font-weight: 400;
+
+  @include respond-above(sm) {
+    font-size: 2em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 1.8em;
+  }
+}
+
+.title5 {
+  font-weight: 400;
+
+  @include respond-above(sm) {
+    font-size: 1.8em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 1.6em;
+  }
+}
+
+.title6 {
+  font-weight: 400;
+  font-size: 1.6em;
+}

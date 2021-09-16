@@ -1,0 +1,23 @@
+.subtitle1 {
+  font-weight: 400;
+
+  @include respond-above(sm) {
+    font-size: 1.6em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 1.4em;
+  }
+}
+
+.subtitle2 {
+  font-weight: 500;
+
+  @include respond-above(sm) {
+    font-size: 1.4em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 1.2em;
+  }
+}

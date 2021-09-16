@@ -1,0 +1,11 @@
+.caption {
+  font-weight: 400;
+
+  @include respond-above(sm) {
+    font-size: 1.4em;
+  }
+
+  @include respond-below(sm) {
+    font-size: 1.2em;
+  }
+}

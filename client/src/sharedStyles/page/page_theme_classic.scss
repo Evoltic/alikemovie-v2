@@ -1,0 +1,13 @@
+@import '/sharedStyles/section/section.scss';
+
+.page_theme_classic {
+  background: $backColor0;
+
+  .page__section {
+    @extend .section;
+  }
+
+  .page__section-content {
+    @extend .section__content;
+  }
+}
