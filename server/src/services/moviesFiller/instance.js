@@ -3,7 +3,7 @@ const { postgreSql } = require('../postgreSql/instance')
 
 const moviesFiller = new MoviesFiller(
   {
-    'title.basics': async function(row) {
+    'title.basics': async function (row) {
       const [
         imdbId,
         titleType,
@@ -13,10 +13,10 @@ const moviesFiller = new MoviesFiller(
         startYear,
         endYear,
         runtimeMinutes,
-        genres
+        genres,
       ] = row
 
-      if (titleType !== 'movie' && titleType !== 'tvseries') return
+      if (titleType !== 'movie' && titleType !== 'tvSeries') return
 
       return this.client.query(
         `
@@ -39,18 +39,18 @@ const moviesFiller = new MoviesFiller(
           startYear,
           endYear,
           runtimeMinutes,
-          genres ? genres.split(',') : undefined
+          genres ? genres.split(',') : undefined,
         ]
       )
     },
-    'name.basics': async function(row) {
+    'name.basics': async function (row) {
       const [
         imdbId,
         primaryName,
         birthYear,
         deathYear,
         primaryProfession,
-        knownForTitles
+        knownForTitles,
       ] = row
 
       return this.client.query(
@@ -70,11 +70,11 @@ const moviesFiller = new MoviesFiller(
           primaryName,
           birthYear,
           deathYear,
-          primaryProfession ? primaryProfession.split(',') : undefined
+          primaryProfession ? primaryProfession.split(',') : undefined,
         ]
       )
     },
-    'title.principals': async function(row) {
+    'title.principals': async function (row) {
       return this.client.query(
         `
         INSERT INTO moviesCastAndCrew(
@@ -101,10 +101,10 @@ const moviesFiller = new MoviesFiller(
           row[3],
           row[4],
           row[5] ? JSON.parse(row[5]) : undefined,
-          row[1]
+          row[1],
         ]
       )
-    }
+    },
   },
   {
     async callBeforeSaveOperations() {
@@ -112,7 +112,7 @@ const moviesFiller = new MoviesFiller(
     },
     callAfterSaveOperations() {
       this.client.release()
-    }
+    },
   }
 )
 
