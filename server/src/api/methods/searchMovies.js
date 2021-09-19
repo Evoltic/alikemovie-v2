@@ -6,7 +6,7 @@ async function searchMovies(data = {}, { sendError, sendData }) {
 
   if (typeof query === 'undefined') {
     return sendError(
-      new ValidationError(`The "query" field must be specified`, 'query')
+      new ValidationError(`The "data.query" field must be specified`, 'query')
     )
   }
 

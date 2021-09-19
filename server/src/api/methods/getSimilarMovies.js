@@ -5,7 +5,10 @@ async function getSimilarMovies(data = {}, { sendError, sendData }) {
   const { movieId } = data
   if (typeof movieId === 'undefined') {
     return sendError(
-      new ValidationError(`The "movieId" field must be specified`, 'movieId')
+      new ValidationError(
+        `The "data.movieId" field must be specified`,
+        'movieId'
+      )
     )
   }
 
