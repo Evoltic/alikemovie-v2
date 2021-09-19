@@ -4,7 +4,8 @@
   "description": "a backend for 'alikemovie' app",
   "main": "src/index.js",
   "scripts": {
-    "dev": "node --inspect ./src/index.js",
+    "start": "node ./src/index.js",
+    "dev": "nodemon --watch ./src --inspect ./src/index.js",
     "dev:first-launch": "cross-env IS_FIRST_LAUNCH=true npm run dev"
   },
   "author": "evoltic",
