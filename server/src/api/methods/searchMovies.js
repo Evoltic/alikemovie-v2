@@ -11,7 +11,7 @@ async function searchMovies(data = {}, { sendError, sendData }) {
   }
 
   try {
-    const movies = await moviesSearch.search(query, 'movie')
+    const movies = await moviesSearch.search(query)
     return sendData(movies)
   } catch (e) {
     return sendError(e)

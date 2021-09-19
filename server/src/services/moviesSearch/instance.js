@@ -2,27 +2,37 @@ const { postgreSql } = require('../postgreSql/instance')
 
 // TODO: make a search more accurate
 
-const moviesSearch = new class {
+const moviesSearch = new (class {
   build() {
     return postgreSql.query(
       `
       INSERT INTO moviesDocuments (movieid, document)
-      SELECT id, to_tsvector(title) FROM movies
+      SELECT 
+        id,
+        setweight(to_tsvector(title), 'A')    ||
+        setweight(to_tsvector(cast(startYear as varchar)), 'B')  ||
+        setweight(to_tsvector(coalesce(cast(endYear as varchar),'')), 'C')  ||
+        setweight(to_tsvector(coalesce(array_to_string(genres, ' '), '')), 'D')
+      FROM movies
       ON CONFLICT (movieid) DO UPDATE SET document = EXCLUDED.document;
       `
     )
   }
 
-  search(query, type) {
-    return postgreSql.query(
-      `
-      SELECT * FROM movies
-      LEFT JOIN moviesDocuments ON movies.id = moviesDocuments.movieId
-      WHERE document @@ plainto_tsquery($1) AND movies.type = $2
+  search(query, types = ['movie', 'tvSeries']) {
+    return postgreSql
+      .query(
+        `
+        SELECT * FROM movies
+        LEFT JOIN moviesDocuments ON movies.id = moviesDocuments.movieId
+        WHERE document @@ plainto_tsquery($1) 
+        AND movies.type = ANY ($2)
+        AND runtimeMinutes IS NOT NULL
       `,
-      [query, type]
-    ).then(result => result.rows)
+        [query, types]
+      )
+      .then((result) => result.rows)
   }
-}
+})()
 
-module.exports = {moviesSearch}
+module.exports = { moviesSearch }
