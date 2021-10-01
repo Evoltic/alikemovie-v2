@@ -2,8 +2,15 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { mapDomainErrorToHttpResponse } = require('../errors')
 const { logger } = require('../functions/logger')
+const { getMoviePoster } = require('./methods')
 
-const routes = []
+const routes = [
+  {
+    route: '/movies/:movieId/poster',
+    method: 'get',
+    handler: getMoviePoster,
+  },
+]
 
 function setupContentApi() {
   const port = process.env.CONTENT_SERVER_PORT
