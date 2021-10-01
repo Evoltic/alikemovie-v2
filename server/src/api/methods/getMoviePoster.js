@@ -30,11 +30,17 @@ async function downloadPosterFromThirdParty(imdbId) {
     )
   }
 
-  const posterPath = await response
-    .json()
-    .then((body) => body['movie_results'][0]['poster_path'])
+  const movie = await response.json().then((body) => body['movie_results'][0])
 
-  if (typeof posterPath !== 'string') return undefined
+  if (typeof movie === 'undefined') {
+    throw new ResourceNotFoundError(imdbId, 'themoviedb')
+  }
+
+  const posterPath = movie['poster_path']
+  if (typeof posterPath !== 'string') {
+    throw new ResourceNotFoundError(imdbId, 'themoviedb posters')
+  }
+
   return fetch(`https://www.themoviedb.org/t/p/original/${posterPath}`).then(
     (response) => response.buffer()
   )
@@ -80,7 +86,7 @@ async function getMoviePoster(data = {}, { sendError, sendData }) {
       }
     )
   } catch (e) {
-    logger.error(e)
+    if (!(e instanceof ResourceNotFoundError)) logger.error(e)
     return sendError(e)
   }
 
