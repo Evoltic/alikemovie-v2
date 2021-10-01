@@ -1,4 +1,5 @@
 import React from 'react'
+import debounce from 'lodash.debounce'
 import { Markup } from './markup'
 import { attachWorker } from '/components/autoWorker'
 import { PageContext } from '/components/router'
@@ -65,7 +66,7 @@ export const SearchBox = attachWorker(
       this.setState({ currentItemIndex: index }, this.submit)
     }
 
-    search = async (query) => {
+    search = debounce(async (query) => {
       this.searchesStarted++
       const currentSearchNumber = this.searchesStarted
 
@@ -93,7 +94,7 @@ export const SearchBox = attachWorker(
         isUnknownError,
         isPending: false,
       })
-    }
+    }, 500)
 
     handleInputChange = (e) => {
       const inputValue = e.target.value
