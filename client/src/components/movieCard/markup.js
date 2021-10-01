@@ -1,5 +1,6 @@
 import React from 'react'
 import './index.scss'
+import { SmartImage } from '/components/smartImage'
 
 export const Markup = (props) => {
   const { id, title, startyear, endyear, genres } = props
@@ -7,9 +8,10 @@ export const Markup = (props) => {
   return (
     <div className="movie-card">
       <div className="movie-card__aside">
-        <img
+        <SmartImage
           className="movie-card__cover"
           src={process.env.CONTENT_API_URL + `/movies/${id}/poster`}
+          alt={`${title}`}
         />
       </div>
       <div className="movie-card__main">

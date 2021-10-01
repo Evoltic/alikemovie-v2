@@ -2,6 +2,7 @@ import React from 'react'
 import './index.scss'
 import SearchIcon from '/assets/icons/search.svg'
 import { LoadingLine } from '/components/loadingLine'
+import { SmartImage } from '/components/smartImage'
 
 export const Markup = (props) => {
   const {
@@ -76,7 +77,7 @@ export const Markup = (props) => {
                 onClick={(e) => handleItemClick(e, i)}
                 key={item.id}
               >
-                <img
+                <SmartImage
                   className="search-box__item-image"
                   src={
                     process.env.CONTENT_API_URL + `/movies/${item.id}/poster`
