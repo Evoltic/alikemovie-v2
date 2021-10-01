@@ -44,7 +44,7 @@ class AppLayer extends React.Component {
   }
 
   render() {
-    const { children, ...rest } = this.props
+    const { children = React.Fragment, ...rest } = this.props
     return this.isThisTheApp ? <App {...rest}>{children}</App> : children
   }
 }
