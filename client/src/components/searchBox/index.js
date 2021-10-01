@@ -62,8 +62,7 @@ export const SearchBox = attachWorker(
     }
 
     handleItemClick = (e, index) => {
-      this.setState({ currentItemIndex: index })
-      this.submit()
+      this.setState({ currentItemIndex: index }, this.submit)
     }
 
     search = async (query) => {
