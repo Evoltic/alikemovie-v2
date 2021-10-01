@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { setupApi } = require('./api')
+const { setupWebsocketApi, setupContentApi } = require('./api')
 const { moviesFiller } = require('./services/moviesFiller/instance')
 const { moviesSearch } = require('./services/moviesSearch/instance')
 
@@ -10,7 +10,8 @@ async function startApp() {
     await moviesSearch.build()
   }
 
-  setupApi()
+  setupContentApi()
+  setupWebsocketApi()
 }
 
 startApp()
