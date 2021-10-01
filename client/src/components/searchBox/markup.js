@@ -2,7 +2,6 @@ import React from 'react'
 import './index.scss'
 import SearchIcon from '/assets/icons/search.svg'
 import { LoadingLine } from '/components/loadingLine'
-import placeholderImage from '/assets/images/placeholder_264x330.jpg'
 
 export const Markup = (props) => {
   const {
@@ -79,7 +78,9 @@ export const Markup = (props) => {
               >
                 <img
                   className="search-box__item-image"
-                  src={placeholderImage}
+                  src={
+                    process.env.CONTENT_API_URL + `/movies/${item.id}/poster`
+                  }
                   alt={item.title}
                 />
                 <div className="search-box__item-text">

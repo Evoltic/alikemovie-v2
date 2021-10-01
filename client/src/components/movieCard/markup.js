@@ -1,14 +1,16 @@
 import React from 'react'
 import './index.scss'
-import placeholderImage from '/assets/images/placeholder_264x330.jpg'
 
 export const Markup = (props) => {
-  const { title, startyear, endyear, genres } = props
+  const { id, title, startyear, endyear, genres } = props
 
   return (
     <div className="movie-card">
       <div className="movie-card__aside">
-        <img className="movie-card__cover" src={placeholderImage} />
+        <img
+          className="movie-card__cover"
+          src={process.env.CONTENT_API_URL + `/movies/${id}/poster`}
+        />
       </div>
       <div className="movie-card__main">
         <h2 className="movie-card__title">
