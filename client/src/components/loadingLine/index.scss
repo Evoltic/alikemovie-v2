@@ -15,7 +15,8 @@
     animation-iteration-count: 1, 1, infinite, 1;
     animation-delay: 0s, 1s, 2s, 0s;
     animation-duration: 1s, 1s, 2s, 1s;
-    animation-name: increasing, decreasing, bouncing, disappearing;
+    animation-name: loading-line-increasing, loading-line-decreasing,
+      loading-line-bouncing, loading-line-disappearing;
     animation-play-state: paused, paused, paused, paused;
     animation-timing-function: ease, ease, linear, linear;
   }
@@ -29,7 +30,7 @@
     animation-fill-mode: none, none, none, forwards;
   }
 
-  @keyframes increasing {
+  @keyframes loading-line-increasing {
     0% {
       transform-origin: left;
       transform: scaleX(0);
@@ -40,7 +41,7 @@
     }
   }
 
-  @keyframes decreasing {
+  @keyframes loading-line-decreasing {
     0% {
       transform: scaleX(1);
     }
@@ -49,7 +50,7 @@
     }
   }
 
-  @keyframes bouncing {
+  @keyframes loading-line-bouncing {
     0% {
       transform: scaleX(0.1) translateX(0%);
     }
@@ -61,7 +62,7 @@
     }
   }
 
-  @keyframes disappearing {
+  @keyframes loading-line-disappearing {
     to {
       transform: scaleX(0) translateX(0);
     }
