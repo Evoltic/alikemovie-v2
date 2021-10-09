@@ -15,7 +15,14 @@ class App extends React.Component {
     const { children, ...rest } = props
 
     this.state = { ...rest }
-    updateTheOnlyAppState = (state) => this.setState(state)
+    updateTheOnlyAppState = (state) => {
+      this.setState((oldState) => {
+        let emptyKeys = {}
+        for (const key in oldState) emptyKeys[key] = undefined
+        // empty keys needed because react merging a state, not overwriting it
+        return { ...emptyKeys, ...state }
+      })
+    }
   }
 
   render() {
