@@ -3,6 +3,6 @@ import { Markup } from './markup'
 
 export class Navbar extends React.Component {
   render() {
-    return <Markup />
+    return <Markup {...this.props} />
   }
 }

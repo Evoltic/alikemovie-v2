@@ -32,7 +32,7 @@ class App extends React.Component {
       <Router
         className={this.state.className || 'app'}
         pageClassName={'app__page'}
-        Header={<Navbar />}
+        Header={<Navbar className={'app__navbar'} />}
         TransitionPage={
           <div className="app__transition-background">
             <LoadingCircle className="app__transition-loader" />

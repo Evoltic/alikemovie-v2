@@ -1,34 +1,38 @@
 @import '/sharedStyles/page/page_theme_classic.scss';
+@import '/sharedStyles/app/app_theme_classic.scss';
 @import '/sharedStyles/fonts/title.scss';
 @import '/sharedStyles/fonts/body-font.scss';
+
+.app__home {
+  @extend .app_theme_classic;
+
+  .app__navbar {
+    transform: translateY(30vh);
+  }
+
+  .navbar__logo {
+    transform: translateY(-2em) scale(1.2, 1.2);
+  }
+}
 
 .page_home {
   @extend .page_theme_classic;
 
   .page__section {
-    margin: auto 0;
+    margin-top: auto;
   }
 
   .page__section-content {
     align-items: normal;
   }
 
-  .page__message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: $paddingY $paddingX;
-    border: 1px solid $outlineColor;
-    border-radius: $borderRadius;
-  }
-
-  .page__title {
-    @extend .title1;
-    margin-bottom: $paddingY;
-  }
-
   .page__text {
-    @extend .body-font1;
+    @extend .body-font2;
+    color: $frontColor1;
+    text-align: center;
+  }
+
+  .page__link {
+    color: inherit;
   }
 }
