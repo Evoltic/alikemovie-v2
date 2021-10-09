@@ -1,4 +1,6 @@
 import React from 'react'
+import { RecentHistory } from '/functions/recentHistory'
+import { CoexistingPages } from '/functions/coexistingPages'
 
 const PageContext = React.createContext({
   changePage: () => {
@@ -12,8 +14,23 @@ const PageContext = React.createContext({
 class Router extends React.Component {
   constructor(props) {
     super(props)
+
+    this.coexistingPages = new CoexistingPages({
+      initial: props.CurrentPage,
+      lifetimeMs: props.pageAfterLifeTimeMs || 5000,
+      minPagesLimit: 1,
+      maxPagesLimit: 3,
+      callback: (pages) => this.setState({ pages }),
+    })
+
+    this.recentHistory = new RecentHistory(
+      typeof location !== 'undefined' ? [location.pathname] : [],
+      { maxLength: 4 }
+    )
+
     this.state = {
-      CurrentPage: props.CurrentPage,
+      pages: this.coexistingPages.list,
+      isMovingBackwards: this.recentHistory.isMovingBackwards,
     }
   }
 
@@ -28,10 +45,23 @@ class Router extends React.Component {
     const page = this.props.allPages.find((page) => page.route.test(pathname))
     if (!page) throw new Error(`can't find the page that matches "${pathname}"`)
 
-    this.setState({ CurrentPage: this.props.TransitionPage })
+    const importPage = async () => {
+      this.coexistingPages.outdateEvery()
 
-    const Page = await page.importPage().then((func) => func())
-    this.setState({ CurrentPage: Page })
+      try {
+        const Page = await Promise.race([
+          page.importPage().then((func) => func()),
+          new Promise((resolve, reject) => setTimeout(reject, 10000)),
+        ])
+        this.coexistingPages.add(Page)
+      } catch (e) {
+        location.reload()
+      }
+    }
+
+    this.recentHistory.add(pathname, ({ isMovingBackwards }) =>
+      this.setState({ isMovingBackwards }, importPage)
+    )
   }
 
   componentDidMount() {
@@ -43,13 +73,39 @@ class Router extends React.Component {
   }
 
   render() {
-    // TODO: animate a page change process:
-    //  current page (leaving) => transition page (coming, then leaving) => new page (coming)
+    const {
+      className = '',
+      pageClassName = '',
+      Header,
+      TransitionPage,
+      shouldBeMultiPaging = false,
+    } = this.props
+
+    const { pages, isMovingBackwards } = this.state
 
     return (
       <PageContext.Provider value={{ changePage: this.changePage }}>
-        {this.props.Header}
-        {this.state.CurrentPage}
+        <div
+          className={className}
+          data-router-status={
+            pages.slice(-1)[0].status === 'outdated' ? 'awaiting' : 'ready'
+          }
+          data-router-movement={isMovingBackwards ? 'backwards' : 'forwards'}
+        >
+          {Header}
+          {TransitionPage}
+          {pages
+            .map((page) => (
+              <div
+                className={pageClassName}
+                data-router-page-status={page.status}
+                key={page.id}
+              >
+                {page.component}
+              </div>
+            ))
+            .slice(shouldBeMultiPaging ? 0 : -1)}
+        </div>
       </PageContext.Provider>
     )
   }
