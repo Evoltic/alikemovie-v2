@@ -1,12 +1,13 @@
 @import '/sharedStyles/fonts/title.scss';
 @import '/sharedStyles/fonts/caption.scss';
+@import '/sharedStyles/skeleton/skeleton.scss';
 
 .movie-card {
   display: flex;
   color: $frontColor0;
   border-radius: $borderRadius;
   background-color: $backColor0;
-  box-shadow: $outlineColor 0 0 0 1px, $outlineColor 0 2px 4px;
+  box-shadow: $boxShadow0;
   transition: box-shadow 0.1s, background 60ms ease-in 0s;
 
   &__aside {
@@ -23,6 +24,11 @@
       min-width: 9em;
       max-width: 9em;
     }
+  }
+
+  &__aside:empty {
+    @extend .skeleton;
+    border-radius: $borderRadius 0 0 $borderRadius;
   }
 
   &__cover {
@@ -49,13 +55,38 @@
   &__title-name {
     @extend .title6;
     line-height: 1.25;
+
+    @include respond-below(xs) {
+      min-width: 50%;
+    }
+
+    @include respond-above(xs) {
+      min-width: 200px;
+    }
+  }
+
+  &__title-name:empty {
+    @extend .skeleton;
   }
 
   &__title-year {
     @extend .caption;
     white-space: nowrap;
     padding-left: $paddingX;
+    text-align: right;
     color: $frontColor1;
+
+    @include respond-below(xs) {
+      min-width: 15%;
+    }
+
+    @include respond-above(xs) {
+      min-width: 50px;
+    }
+  }
+
+  &__title-year:empty {
+    @extend .skeleton;
   }
 
   &__chips {
@@ -74,5 +105,17 @@
     color: $frontColor2;
     margin-right: $halfPaddingX;
     margin-bottom: $halfPaddingY;
+
+    @include respond-below(xs) {
+      min-width: 10%;
+    }
+
+    @include respond-above(xs) {
+      min-width: 30px;
+    }
+  }
+
+  &__chip:empty {
+    @extend .skeleton;
   }
 }

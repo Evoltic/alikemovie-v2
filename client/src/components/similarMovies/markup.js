@@ -7,14 +7,19 @@ export const Markup = (props) => {
 
   return (
     <div className="similar-movies">
-      {isPending && <p className="similar-movies__loader">loading...</p>}
-      {isNotFound && <p className="similar-movies__not-found">not found</p>}
-      {isUnknownError && (
-        <p className="similar-movies__not-found">unknown error</p>
+      {isNotFound && (
+        <div className="similar-movies__error-box">
+          <h1 className="similar-movies__error-title">Not Found</h1>
+        </div>
       )}
-      {items.map((item) => (
-        <div className="similar-movies__item" key={item.id}>
-          <MovieCard {...item} />
+      {isUnknownError && (
+        <div className="similar-movies__error-box">
+          <h1 className="similar-movies__error-title">Unknown Error</h1>
+        </div>
+      )}
+      {(isPending ? [{}, {}, {}, {}] : items).map((item, i) => (
+        <div className="similar-movies__item" key={item.id || i}>
+          <MovieCard {...item} isLoading={isPending} />
         </div>
       ))}
     </div>
