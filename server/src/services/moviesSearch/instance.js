@@ -7,14 +7,27 @@ const moviesSearch = new (class {
     return postgreSql.query(
       `
       INSERT INTO moviesDocuments (movieid, document)
-      SELECT 
+      SELECT
+        movieid,
+        setweight(to_tsvector(string_agg(title, '; ')), 'A')
+      FROM moviestitles
+      WHERE
+        region = 'US' OR
+        region = 'RU' OR
+        language = 'en' OR
+        language = 'ru' OR
+        isoriginaltitle = true
+      GROUP BY moviestitles.movieid
+      ON CONFLICT (movieid) DO UPDATE SET document = EXCLUDED.document;
+
+      INSERT INTO moviesDocuments (movieid, document)
+      SELECT
         id,
-        setweight(to_tsvector(title), 'A')    ||
         setweight(to_tsvector(cast(startYear as varchar)), 'B')  ||
         setweight(to_tsvector(coalesce(cast(endYear as varchar),'')), 'C')  ||
         setweight(to_tsvector(coalesce(array_to_string(genres, ' '), '')), 'D')
       FROM movies
-      ON CONFLICT (movieid) DO UPDATE SET document = EXCLUDED.document;
+      ON CONFLICT (movieid) DO UPDATE SET document = moviesDocuments.document || EXCLUDED.document;
       `
     )
   }
