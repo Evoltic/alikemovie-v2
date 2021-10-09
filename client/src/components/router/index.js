@@ -82,18 +82,18 @@ class Router extends React.Component {
     } = this.props
 
     const { pages, isMovingBackwards } = this.state
+    const status =
+      pages.slice(-1)[0].status === 'outdated' ? 'awaiting' : 'ready'
 
     return (
       <PageContext.Provider value={{ changePage: this.changePage }}>
         <div
           className={className}
-          data-router-status={
-            pages.slice(-1)[0].status === 'outdated' ? 'awaiting' : 'ready'
-          }
+          data-router-status={status}
           data-router-movement={isMovingBackwards ? 'backwards' : 'forwards'}
         >
           {Header}
-          {TransitionPage}
+          {status === 'awaiting' && TransitionPage}
           {pages
             .map((page) => (
               <div
