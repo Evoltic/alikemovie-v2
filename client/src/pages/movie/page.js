@@ -10,12 +10,14 @@ export default () => {
       : location.pathname.split('/').slice(-1)[0]
 
   return (
-    <App className="page_movie">
-      <div className="page__section">
-        <div className="page__section-content">
-          <SimilarMovies movieId={movieId} />
+    <App>
+      <main className="page_movie">
+        <div className="page__section">
+          <div className="page__section-content">
+            <SimilarMovies movieId={movieId} />
+          </div>
         </div>
-      </div>
+      </main>
     </App>
   )
 }

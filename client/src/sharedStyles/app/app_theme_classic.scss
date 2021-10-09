@@ -1,0 +1,110 @@
+@import '/sharedStyles/fonts/title.scss';
+
+.app_theme_classic {
+  .app__pages {
+    overflow-x: hidden;
+  }
+
+  .app__transition-background {
+    @extend .title1;
+    position: absolute;
+    top: 30vh;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+    animation-timing-function: ease-in;
+  }
+
+  &[data-router-status='awaiting'] .app__transition-background {
+    animation-name: app-page-blinking;
+  }
+
+  .app__page {
+    animation-iteration-count: 1;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: forwards;
+  }
+
+  .app__page[data-router-page-status='initial'] {
+  }
+
+  &[data-router-movement='forwards']
+    .app__page[data-router-page-status='outdated'] {
+    display: none;
+    animation-name: app-page-leaving-left;
+  }
+
+  &[data-router-movement='forwards'] .app__page[data-router-page-status='new'] {
+    animation-name: app-page-appearing-from-right;
+  }
+
+  &[data-router-movement='backwards']
+    .app__page[data-router-page-status='outdated'] {
+    display: none;
+    animation-name: app-page-leaving-right;
+  }
+
+  &[data-router-movement='backwards']
+    .app__page[data-router-page-status='new'] {
+    animation-name: app-page-appearing-from-left;
+  }
+
+  @keyframes app-page-blinking {
+    from {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.6;
+    }
+    to {
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes app-page-leaving-left {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-150%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes app-page-leaving-right {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(150%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes app-page-appearing-from-right {
+    from {
+      opacity: 0;
+      transform: translateX(150%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes app-page-appearing-from-left {
+    from {
+      opacity: 0;
+      transform: translateX(-150%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}

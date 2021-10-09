@@ -1,8 +1,8 @@
 @import '/sharedStyles/page/page_theme_classic.scss';
 @import '/sharedStyles/fonts/title.scss';
-@import '/sharedStyles/fonts/body-font.scss';
+@import '/sharedStyles/fonts/subtitle.scss';
 
-.page_home {
+.page_404 {
   @extend .page_theme_classic;
 
   .page__section {
@@ -28,7 +28,8 @@
     margin-bottom: $paddingY;
   }
 
-  .page__text {
-    @extend .body-font1;
+  .page__link {
+    @extend .subtitle1;
+    color: $frontColor0;
   }
 }

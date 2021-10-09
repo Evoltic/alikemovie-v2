@@ -2,6 +2,7 @@ import React from 'react'
 import { Router } from '/components/router'
 import pages from '/pages'
 import { Navbar } from '/components/navbar'
+import './index.scss'
 
 let isTheOnlyAppCreated = false
 let updateTheOnlyAppState = () => {
@@ -27,14 +28,17 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className={this.state.className || ''}>
-        <Router
-          Header={<Navbar />}
-          CurrentPage={this.props.children}
-          TransitionPage={<p>loading a page...</p>}
-          allPages={pages}
-        />
-      </div>
+      <Router
+        className={this.state.className || 'app'}
+        pageClassName={'app__page'}
+        Header={<Navbar />}
+        TransitionPage={
+          <p className="app__transition-background">loading a page...</p>
+        }
+        CurrentPage={this.props.children}
+        allPages={pages}
+        shouldBeMultiPaging={true}
+      />
     )
   }
 }

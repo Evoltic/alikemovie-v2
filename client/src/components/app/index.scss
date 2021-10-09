@@ -1,0 +1,5 @@
+@import '/sharedStyles/app/app_theme_classic.scss';
+
+.app {
+  @extend .app_theme_classic;
+}
