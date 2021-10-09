@@ -105,6 +105,40 @@ const moviesFiller = new MoviesFiller(
         ]
       )
     },
+    'title.akas': async function (row) {
+      return this.client.query(
+        `
+        INSERT INTO moviesTitles(
+          movieId,
+          "order",
+          title,
+          region,
+          language,
+          attributes,
+          isOriginalTitle
+        )
+        VALUES(
+          (SELECT id FROM movies WHERE imdbId = $1),
+          $2,
+          $3,
+          $4,
+          $5,
+          $6,
+          $7
+        )
+        ON CONFLICT (movieId, title, isOriginalTitle) DO NOTHING
+        `,
+        [
+          row[0],
+          row[1],
+          row[2],
+          row[3],
+          row[4],
+          row[6],
+          row[7] == 1 ? true : false,
+        ]
+      )
+    },
   },
   {
     async callBeforeSaveOperations() {

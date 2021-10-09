@@ -24,18 +24,18 @@ class MoviesFiller {
     const writableStream = new Writable({
       write(chunk, encoding, callback) {
         const json = chunk.toString()
-        const row = JSON.parse(json).map(v => (v === '\\N' ? undefined : v))
+        const row = JSON.parse(json).map((v) => (v === '\\N' ? undefined : v))
 
         saver
           .call(context, row)
-          .catch(e => logger.error(e))
+          .catch((e) => logger.error(e))
           .finally(() => callback())
-      }
+      },
     })
 
     try {
       await new Promise((resolve, reject) => {
-        finished(readableStream.pipe(writableStream), err => {
+        finished(readableStream.pipe(writableStream), (err) => {
           err ? reject(err) : resolve()
         })
       })
@@ -50,6 +50,7 @@ class MoviesFiller {
       s['title.basics'] && (await this.downloadAndSave('title.basics'))
       s['name.basics'] && (await this.downloadAndSave('name.basics'))
       s['title.principals'] && (await this.downloadAndSave('title.principals'))
+      s['title.akas'] && (await this.downloadAndSave('title.akas'))
     } catch (e) {
       logger.error(e)
     }

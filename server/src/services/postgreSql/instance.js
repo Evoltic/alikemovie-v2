@@ -3,14 +3,14 @@ const { PostgreSql } = require('./index')
 const postgreSql = new PostgreSql(
   process.env.POSTGRESQL_CONNECTION_STRING
     ? {
-        connectionString: process.env.POSTGRESQL_CONNECTION_STRING
+        connectionString: process.env.POSTGRESQL_CONNECTION_STRING,
       }
     : {
         user: process.env.POSTGRESQL_USER,
         host: process.env.POSTGRESQL_HOST,
         database: process.env.POSTGRESQL_DATABASE,
         password: process.env.POSTGRESQL_PASSWORD,
-        port: process.env.POSTGRESQL_PORT
+        port: process.env.POSTGRESQL_PORT,
       },
   process.env.IS_NOT_MAIN_INSTANCE === 'true'
     ? undefined
@@ -45,13 +45,24 @@ const postgreSql = new PostgreSql(
       characters VARCHAR(1000)[],
       "order" SMALLINT
     );
+    
+    CREATE TABLE IF NOT EXISTS moviesTitles (
+      movieId INT REFERENCES movies (id) NOT NULL,
+      title VARCHAR(1000) NOT NULL,
+      "order" SMALLINT,
+      region VARCHAR(100),
+      language VARCHAR(100),
+      attributes VARCHAR(1000),
+      isOriginalTitle BOOLEAN NOT NULL,
+      PRIMARY KEY (movieId, title, isOriginalTitle)
+    );
 
     CREATE TABLE IF NOT EXISTS moviesDocuments (
       movieId INT REFERENCES movies (id) NOT NULL UNIQUE,
       document TSVECTOR NOT NULL 
     );
-    `
-    ]
+    `,
+      ]
 )
 
 module.exports = { postgreSql }
