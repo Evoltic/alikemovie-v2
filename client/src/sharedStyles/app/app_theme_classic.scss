@@ -6,19 +6,11 @@
   }
 
   .app__transition-background {
-    @extend .title1;
     position: absolute;
     top: 30vh;
     left: 50%;
     transform: translateX(-50%);
-    opacity: 0;
-    animation-iteration-count: infinite;
-    animation-duration: 1s;
-    animation-timing-function: ease-in;
-  }
-
-  &[data-router-status='awaiting'] .app__transition-background {
-    animation-name: app-page-blinking;
+    animation: app-page-fade-in 0.5s;
   }
 
   .app__page {
@@ -52,15 +44,12 @@
     animation-name: app-page-appearing-from-left;
   }
 
-  @keyframes app-page-blinking {
+  @keyframes app-page-fade-in {
     from {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.6;
+      opacity: 0;
     }
     to {
-      opacity: 0.3;
+      opacity: 1;
     }
   }
 

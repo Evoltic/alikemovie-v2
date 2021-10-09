@@ -2,6 +2,7 @@ import React from 'react'
 import { Router } from '/components/router'
 import pages from '/pages'
 import { Navbar } from '/components/navbar'
+import { LoadingCircle } from '/components/loadingCircle'
 import './index.scss'
 
 let isTheOnlyAppCreated = false
@@ -33,7 +34,10 @@ class App extends React.Component {
         pageClassName={'app__page'}
         Header={<Navbar />}
         TransitionPage={
-          <p className="app__transition-background">loading a page...</p>
+          <div className="app__transition-background">
+            <LoadingCircle className="app__transition-loader" />
+            <p className="app__transition-text">loading</p>
+          </div>
         }
         CurrentPage={this.props.children}
         allPages={pages}
