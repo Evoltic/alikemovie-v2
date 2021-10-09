@@ -1,23 +1,5 @@
 @import '/sharedStyles/app/app_theme_classic.scss';
-@import '/sharedStyles/fonts/subtitle.scss';
 
 .app {
   @extend .app_theme_classic;
-
-  .app__transition-background {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .app__transition-loader {
-    width: 100px;
-    height: 100px;
-  }
-
-  .app__transition-text {
-    @extend .subtitle1;
-    padding: $doublePaddingY 0;
-    white-space: nowrap;
-  }
 }

@@ -1,4 +1,4 @@
-@import '/sharedStyles/fonts/title.scss';
+@import '/sharedStyles/fonts/subtitle.scss';
 
 .app_theme_classic {
   .app__pages {
@@ -9,8 +9,22 @@
     position: absolute;
     top: 30vh;
     left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     transform: translateX(-50%);
     animation: app-page-fade-in 0.5s;
+  }
+
+  .app__transition-loader {
+    width: 100px;
+    height: 100px;
+  }
+
+  .app__transition-text {
+    @extend .subtitle1;
+    padding: $doublePaddingY 0;
+    white-space: nowrap;
   }
 
   .app__page {
