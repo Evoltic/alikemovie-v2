@@ -1,5 +1,6 @@
 const { MoviesFiller } = require('./index')
 const { postgreSql } = require('../postgreSql/instance')
+const { logger } = require('../../functions/logger')
 
 const moviesFiller = new MoviesFiller(
   {
@@ -146,6 +147,18 @@ const moviesFiller = new MoviesFiller(
     },
     callAfterSaveOperations() {
       this.client.release()
+    },
+  },
+  {
+    handleError: (e) => {
+      if (e.routine === 'ExecConstraints') return
+      logger.error(e)
+    },
+    updateProgress: (key, status) => {
+      logger.info(
+        `the current status of "${key}" is "${status}"`,
+        'moviesFiller'
+      )
     },
   }
 )

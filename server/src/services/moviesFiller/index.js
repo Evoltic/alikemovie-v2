@@ -1,17 +1,27 @@
 const { Writable, finished } = require('stream')
 const { ImdbDatasets } = require('../imdbDatasets')
-const { logger } = require('../../functions/logger')
 
 class MoviesFiller {
-  constructor(savers, hooks = {}) {
+  constructor(savers, hooks = {}, optional = {}) {
     this.imdbDatasets = new ImdbDatasets()
 
     this.savers = savers
     const { callBeforeSaveOperations, callAfterSaveOperations } = hooks
     this.hooks = { callBeforeSaveOperations, callAfterSaveOperations }
+
+    const {
+      handleError = (e) => {
+        throw e
+      },
+      updateProgress = () => {},
+    } = optional
+    this.handleError = handleError
+    this.updateProgress = updateProgress
   }
 
   async downloadAndSave(datasetKey) {
+    const handleError = this.handleError
+
     const saver = this.savers[datasetKey]
     const readableStream = await this.imdbDatasets.download(datasetKey)
 
@@ -28,7 +38,7 @@ class MoviesFiller {
 
         saver
           .call(context, row)
-          .catch((e) => logger.error(e))
+          .catch((e) => handleError(e))
           .finally(() => callback())
       },
     })
@@ -45,15 +55,19 @@ class MoviesFiller {
   }
 
   async start() {
-    const s = this.savers
-    try {
-      s['title.basics'] && (await this.downloadAndSave('title.basics'))
-      s['name.basics'] && (await this.downloadAndSave('name.basics'))
-      s['title.principals'] && (await this.downloadAndSave('title.principals'))
-      s['title.akas'] && (await this.downloadAndSave('title.akas'))
-    } catch (e) {
-      logger.error(e)
+    const checkDownloadSaveNotify = (key) => {
+      if (!this.savers[key]) return
+      this.updateProgress(key, 'start')
+      return this.downloadAndSave(key)
+        .catch((e) => this.handleError(e))
+        .finally(() => this.updateProgress(key, 'done'))
     }
+
+    checkDownloadSaveNotify('title.akas')
+
+    await checkDownloadSaveNotify('title.basics')
+    await checkDownloadSaveNotify('name.basics')
+    await checkDownloadSaveNotify('title.principals')
   }
 }
 
