@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node ./src/index.js",
-    "dev": "nodemon --watch ./src --inspect --ignore ./src/services/assetsManager/assets ./src/index.js",
-    "dev:first-launch": "cross-env IS_FIRST_LAUNCH=true npm run dev"
+    "start:first-launch": "cross-env IS_FIRST_LAUNCH=true npm run start",
+    "dev": "nodemon --watch ./src --inspect --ignore ./src/services/assetsManager/assets ./src/index.js"
   },
   "author": "evoltic",
   "license": "ISC",
