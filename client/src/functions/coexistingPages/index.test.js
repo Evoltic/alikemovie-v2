@@ -48,7 +48,7 @@ describe('/functions/сoexistingPages', function () {
       pages.add(4)
 
       await new Promise((resolve) => setTimeout(resolve, 500))
-      expect(pages.list.length).to.eql(4)
+      expect(pages.list.length).to.eql(3)
 
       await new Promise((resolve) => setTimeout(resolve, 500))
       expect(pages.list.length).to.eql(1)

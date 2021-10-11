@@ -52,6 +52,9 @@ class CoexistingPages {
   }
 
   check() {
+    this.list = this.list.slice(-this.maxPagesLimit)
+    this.callback(this.list)
+
     clearTimeout(this.timerId)
     this.timerId = setTimeout(() => {
       if (this.list.length >= this.maxPagesLimit) {

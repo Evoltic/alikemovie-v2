@@ -17,9 +17,9 @@ class Router extends React.Component {
 
     this.coexistingPages = new CoexistingPages({
       initial: props.CurrentPage,
-      lifetimeMs: props.pageAfterLifeTimeMs || 5000,
+      lifetimeMs: props.pageAfterLifeTimeMs || 3000,
       minPagesLimit: 1,
-      maxPagesLimit: 3,
+      maxPagesLimit: 2,
       callback: (pages) => this.setState({ pages }),
     })
 
