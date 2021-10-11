@@ -1,6 +1,7 @@
 import React from 'react'
 import { Markup } from './markup'
 import placeholderImage from '/assets/images/placeholder_264x330.jpg'
+import placeholder404Image from '/assets/images/placeholder404_264x330.jpg'
 
 export class SmartImage extends React.Component {
   constructor(props) {
@@ -51,7 +52,7 @@ export class SmartImage extends React.Component {
 
   handleError = (event) => {
     if (this.state.isErrored) return
-    this.setState({ isErrored: true, src: placeholderImage })
+    this.setState({ isErrored: true, src: placeholder404Image })
   }
 
   render() {
