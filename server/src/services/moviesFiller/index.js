@@ -63,9 +63,8 @@ class MoviesFiller {
         .finally(() => this.updateProgress(key, 'done'))
     }
 
-    checkDownloadSaveNotify('title.akas')
-
     await checkDownloadSaveNotify('title.basics')
+    checkDownloadSaveNotify('title.akas')
     await checkDownloadSaveNotify('name.basics')
     await checkDownloadSaveNotify('title.principals')
   }
