@@ -9,24 +9,24 @@ class Log {
 
 class Logger {
   constructor(mode) {
-    this.shouldBeLoggedNow = mode === 'dev'
+    this.shouldBeLoggedNow = true
   }
 
   get logs() {
     return {
-      push: log => {
+      push: (log) => {
         if (this.shouldBeLoggedNow) {
           console.log(`\r${log.context}: ${log.message}\r`)
         }
         // could be sent somewhere or save
-      }
+      },
     }
   }
 
   status(message, context) {
     this.logs.push(new Log(message, 'status', context))
 
-    return value => {
+    return (value) => {
       this.logs.push(new Log(value, 'status', context))
     }
   }
