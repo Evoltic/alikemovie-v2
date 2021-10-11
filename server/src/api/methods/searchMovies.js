@@ -10,6 +10,15 @@ async function searchMovies(data = {}, { sendError, sendData }) {
     )
   }
 
+  if (query.length <= 1) {
+    return sendError(
+      new ValidationError(
+        `The "data.query" field length must be greater than 1`,
+        'query'
+      )
+    )
+  }
+
   try {
     const movies = await moviesSearch.search(query)
     return sendData(movies)
