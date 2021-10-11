@@ -12,6 +12,7 @@ There is no Server Side Rendering.
 ## .env
 
 - WEBSOCKET_API_URL
+- CONTENT_API_URL
 
 ## UI Components
 
@@ -132,6 +133,7 @@ Todo
 - CONTENT_SERVER_PORT
 - IS_NOT_MAIN_INSTANCE
 - IS_FIRST_LAUNCH
+- THEMOVIEDB_API_KEY
 
 ## Communicating with the server
 
