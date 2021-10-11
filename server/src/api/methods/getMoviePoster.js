@@ -6,7 +6,7 @@ const { AssetsManager } = require('../../services/assetsManager')
 
 const postersManager = new AssetsManager({
   groupName: '/posters',
-  availableBytes: 100 * 1024 * 1024, // 100mb
+  availableBytes: process.env.AVAILABLE_BYTES_FOR_POSTERS || 100 * 1024 * 1024, // 100mb
   handleLimitError: (e) => {
     logger.warn(e)
     return false
