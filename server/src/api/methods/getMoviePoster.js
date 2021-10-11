@@ -41,9 +41,9 @@ async function downloadPosterFromThirdParty(imdbId) {
     throw new ResourceNotFoundError(imdbId, 'themoviedb posters')
   }
 
-  return fetch(`https://www.themoviedb.org/t/p/original/${posterPath}`).then(
-    (response) => response.buffer()
-  )
+  return fetch(
+    `https://www.themoviedb.org/t/p/w300_and_h450_bestv2/${posterPath}`
+  ).then((response) => response.buffer())
 }
 
 async function getMoviePoster(data = {}, { sendError, sendData }) {
