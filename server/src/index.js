@@ -4,14 +4,17 @@ const { moviesFiller } = require('./services/moviesFiller/instance')
 const { moviesSearch } = require('./services/moviesSearch/instance')
 
 async function startApp() {
-  if (process.env.IS_FIRST_LAUNCH === 'true') {
-    // TODO: make this process on interval. but ensure it wont block the only thread.
-    await moviesFiller.start()
-    await moviesSearch.build()
-  }
-
   setupContentApi()
   setupWebsocketApi()
 }
 
-startApp()
+async function populateDatabase() {
+  await moviesFiller.start()
+  await moviesSearch.build()
+}
+
+if (process.env.IS_AIM_TO_POPULATE_DATABASE === 'true') {
+  populateDatabase()
+} else {
+  startApp()
+}

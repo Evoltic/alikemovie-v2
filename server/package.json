@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node ./src/index.js",
-    "start:first-launch": "cross-env IS_FIRST_LAUNCH=true npm run start",
+    "populate-db": "cross-env IS_AIM_TO_POPULATE_DATABASE=true npm run start",
     "dev": "nodemon --watch ./src --inspect --ignore ./src/services/assetsManager/assets ./src/index.js"
   },
   "author": "evoltic",
