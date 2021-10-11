@@ -5,14 +5,20 @@
 .search-box {
   position: relative;
   width: 100%;
+  transition: transform 0.1s;
+  transform: scale(0.98, 0.98);
 
   &__input-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: $paddingY $paddingX;
-    box-shadow: 0 0 0 1px $outlineColor;
+    box-shadow: $boxShadow0;
     background-color: $backColor0;
+  }
+
+  &_dropdown-open {
+    transform: scale(1, 1);
   }
 
   &_dropdown-closed &__input-container {
@@ -45,6 +51,16 @@
     display: none;
   }
 
+  &_dropdown-open &__dropdown {
+    animation: search-box-dropdown-appearing 0.1s;
+  }
+
+  @keyframes search-box-dropdown-appearing {
+    from {
+      opacity: 0;
+    }
+  }
+
   &__dropdown {
     position: absolute;
     left: 0;
@@ -54,7 +70,7 @@
     box-shadow: 0 0 0 1px $outlineColor;
     border-radius: $borderRadius $borderRadius 0 0;
     background: #fff;
-    max-height: 60vh;
+    max-height: 55vh;
     overflow: auto;
   }
 

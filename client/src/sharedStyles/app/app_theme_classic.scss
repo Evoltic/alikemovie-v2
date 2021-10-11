@@ -7,12 +7,17 @@
 
   .app__transition-background {
     position: absolute;
+    z-index: 1;
     top: 30vh;
     left: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: $doublePaddingY $doublePaddingX;
     transform: translateX(-50%);
+    background-color: $backColor0;
+    box-shadow: $boxShadow0;
+    border-radius: $borderRadius;
     animation: app-page-fade-in 0.5s;
   }
 
@@ -30,8 +35,12 @@
   .app__page {
     animation-iteration-count: 1;
     animation-duration: 0.5s;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-timing-function: ease;
     animation-fill-mode: forwards;
+  }
+
+  .app__page:nth-last-child(n + 3) {
+    display: none;
   }
 
   .app__page[data-router-page-status='initial'] {
@@ -39,7 +48,6 @@
 
   &[data-router-movement='forwards']
     .app__page[data-router-page-status='outdated'] {
-    display: none;
     animation-name: app-page-leaving-left;
   }
 
@@ -49,7 +57,6 @@
 
   &[data-router-movement='backwards']
     .app__page[data-router-page-status='outdated'] {
-    display: none;
     animation-name: app-page-leaving-right;
   }
 
