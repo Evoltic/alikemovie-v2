@@ -107,6 +107,18 @@ const moviesFiller = new MoviesFiller(
       )
     },
     'title.akas': async function (row) {
+      const [imdbId, ordering, title, region, language, types, attributes] = row
+
+      const isOriginalTitle = row[7] == 1 ? true : false
+      const isRegionOk = region === 'US' || region === 'RU'
+      const isLanguageOk = language === 'en' || language === 'ru'
+
+      if (isOriginalTitle || isRegionOk || isLanguageOk) {
+        // then ok
+      } else {
+        return
+      }
+
       return this.client.query(
         `
         INSERT INTO moviesTitles(
@@ -129,15 +141,7 @@ const moviesFiller = new MoviesFiller(
         )
         ON CONFLICT (movieId, title, isOriginalTitle) DO NOTHING
         `,
-        [
-          row[0],
-          row[1],
-          row[2],
-          row[3],
-          row[4],
-          row[6],
-          row[7] == 1 ? true : false,
-        ]
+        [imdbId, ordering, title, region, language, attributes, isOriginalTitle]
       )
     },
   },
