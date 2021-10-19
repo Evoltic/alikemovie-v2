@@ -81,19 +81,10 @@ const handlers = {
   },
 }
 
-function makeWorker(
-  methods,
-  { common = [Contexts], individual = [State] } = {}
-) {
-  let classes = {}
-  for (const CommonClass of common) {
-    const commonClass = new CommonClass()
-    const name = lowercaseFirstLetter(CommonClass.name)
-    classes[name] = commonClass
-  }
-  for (const IndividualClass of individual) {
-    const name = IndividualClass.name
-    classes[name] = IndividualClass
+function makeWorker(methods) {
+  const classes = {
+    contexts: new Contexts(),
+    State: State,
   }
 
   self.onmessage = ({ data = {} }) => {
