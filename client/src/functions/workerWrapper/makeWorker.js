@@ -1,6 +1,30 @@
 // outside main thread
+import { lowercaseFirstLetter } from '/functions/lowercaseFirstLetter'
 
-class Context {
+class Contexts {
+  constructor() {
+    this.contexts = {}
+    this.nextContextId = 0
+  }
+
+  createContext() {
+    this.nextContextId++
+    const contextId = this.nextContextId
+    this.contexts[contextId] = {}
+    return contextId
+  }
+
+  destroyContext(contextId) {
+    delete this.contexts[contextId]
+    return Object.keys(this.contexts).length
+  }
+
+  extendContext(contextId, extension) {
+    this.contexts[contextId] = { ...this.contexts[contextId], ...extension }
+  }
+}
+
+class State {
   constructor() {
     this.publicState = {}
 
@@ -30,72 +54,67 @@ class Context {
   }
 }
 
-function makeWorker(methods) {
-  let contexts = {}
-  let contextId = 0
+const handlers = {
+  createContext: ({}, { classes }) => {
+    const id = classes.contexts.createContext()
+    classes.contexts.extendContext(id, { state: new classes.State() })
+    return id
+  },
+  destroyContext: ({ contextId }, { classes }) => {
+    return classes.contexts.destroyContext(contextId)
+  },
+  subscribeToPublicState: ({ contextId }, { classes, callback }) => {
+    const context = classes.contexts[contextId]
+    const listener = (state) => callback({ type: 'state', v: state })
+    const listenerId = context.state.addPublicStateListener(listener)
+    return { type: 'listenerId', v: listenerId }
+  },
+  unsubscribeFromWorkerPublicState: (data, { classes }) => {
+    const { contextId, listenerId } = data
+    const context = classes.contexts[contextId]
+    return context.state.removePublicStateListener(listenerId)
+  },
+  getMethodsList: ({}, { methods }) => Object.keys(methods ? methods : {}),
+  callWorkerMethod: ({ methodName, contextId, args }, { classes, methods }) => {
+    const context = classes.contexts[contextId]
+    return methods[methodName].apply(context, args)
+  },
+}
 
-  const handleMessage = (postMsg, data) => {
-    const { activityName, callId } = data
-
-    switch (activityName) {
-      case 'getMethodsList':
-        postMsg(Object.keys(methods))
-        break
-      case 'createContext':
-        contexts[contextId] = new Context()
-
-        postMsg(contextId)
-        contextId++
-        break
-      case 'destroyContext':
-        if (typeof data.contextId === 'undefined') return
-
-        delete contexts[data.contextId]
-        postMsg(Object.keys(contexts).length)
-        break
-      case 'callWorkerMethod':
-        if (typeof data.methodName === 'undefined') return
-        if (typeof data.contextId === 'undefined') return
-
-        postMsg(
-          methods[data.methodName].apply(contexts[data.contextId], data.args)
-        )
-        break
-      case 'subscribeToPublicState':
-        if (typeof contexts[data.contextId] === 'undefined') return
-
-        const listener = (state) => {
-          postMsg({ type: 'state', v: state }, callId)
-        }
-
-        const listenerId = contexts[data.contextId].addPublicStateListener(listener)
-        postMsg({ type: 'listenerId', v: listenerId })
-        break
-      case 'unsubscribeFromPublicState':
-        if (typeof data.contextId === 'undefined') return
-        if (typeof contexts[contextId] === 'undefined') return
-        if (typeof data.listenerId === 'undefined') return
-
-        postMsg(contexts[contextId].removePublicStateListener(data.listenerId))
-        break
-    }
+function makeWorker(
+  methods,
+  { common = [Contexts], individual = [State] } = {}
+) {
+  let classes = {}
+  for (const CommonClass of common) {
+    const commonClass = new CommonClass()
+    const name = lowercaseFirstLetter(CommonClass.name)
+    classes[name] = commonClass
+  }
+  for (const IndividualClass of individual) {
+    const name = IndividualClass.name
+    classes[name] = IndividualClass
   }
 
   self.onmessage = ({ data = {} }) => {
-    const postMsg = (result, callId = data.callId) => {
+    const { callId, activityName } = data
+
+    const answer = (result) => {
       const isResultPromise = result ? !!result.then : false
 
       if (!isResultPromise) postMessage({ callId, result })
       else
         result
-          .then(r => postMessage({ callId, result: r }))
-          .catch(error => postMessage({ callId: data.callId, error }))
+          .then((r) => postMessage({ callId, result: r }))
+          .catch((error) => postMessage({ callId, error }))
     }
 
     try {
-      handleMessage(postMsg, data)
+      answer(
+        handlers[activityName](data, { classes, methods, callback: answer })
+      )
     } catch (error) {
-      postMessage({ callId: data.callId, error })
+      postMessage({ callId, error })
     }
   }
 }
