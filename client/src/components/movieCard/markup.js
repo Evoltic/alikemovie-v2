@@ -1,9 +1,11 @@
 import React from 'react'
 import './index.scss'
 import { SmartImage } from '/components/smartImage'
+import { SimilarityIndicator } from '/components/similarityIndicator'
 
 export const Markup = (props) => {
-  const { id, title, startyear, endyear, genres, isLoading } = props
+  const { id, title, startyear, endyear, genres, score, maxScore, isLoading } =
+    props
 
   return (
     <div className="movie-card">
@@ -30,6 +32,15 @@ export const Markup = (props) => {
             </p>
           ))}
         </div>
+        {score && (
+          <SimilarityIndicator
+            className="movie-card__indicator"
+            value={score}
+            maxValue={maxScore}
+            minValue={0}
+            words={['Very similar', 'Quite similar', 'A bit similar']}
+          />
+        )}
       </div>
     </div>
   )

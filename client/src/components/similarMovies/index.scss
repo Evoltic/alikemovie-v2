@@ -21,4 +21,8 @@
     @extend .title1;
     color: $errorColor;
   }
+
+  .similar-movies__item:first-child .movie-card__indicator {
+    display: none;
+  }
 }

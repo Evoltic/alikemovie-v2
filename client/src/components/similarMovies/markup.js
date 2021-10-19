@@ -19,7 +19,11 @@ export const Markup = (props) => {
       )}
       {(isPending ? [{}, {}, {}, {}] : items).map((item, i) => (
         <div className="similar-movies__item" key={item.id || i}>
-          <MovieCard {...item} isLoading={isPending} />
+          <MovieCard
+            {...item}
+            isLoading={isPending}
+            maxScore={(items[0] || {}).score}
+          />
         </div>
       ))}
     </div>
