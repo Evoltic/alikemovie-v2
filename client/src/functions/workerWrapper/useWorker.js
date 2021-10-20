@@ -1,16 +1,24 @@
 // inside main thread
 
 class ExtendedWorker {
-  constructor(getWorker, terminateWorker) {
+  constructor(getWorker, terminateWorker, useAnotherWorker) {
     this.nextCallId = 0
 
     this.worker = getWorker()
     this.terminateWorker = terminateWorker || (() => this.worker.terminate())
+
+    this.useAnotherWorker = useAnotherWorker
   }
 
-  sendMessage(message, callBackOnResponse) {
-    const callId = this.nextCallId
-    this.nextCallId++
+  sendMessage(message, callBackOnResponse, options = {}) {
+    let callId
+    if (typeof options.callId === 'undefined') {
+      callId = this.nextCallId
+      this.nextCallId++
+      if (options.informAboutCallId) options.informAboutCallId(callId)
+    } else {
+      callId = options.callId
+    }
 
     this.worker.postMessage({ ...message, callId })
 
@@ -23,18 +31,22 @@ class ExtendedWorker {
     return () => this.worker.removeEventListener('message', listener)
   }
 
-  sendMessagePromisified(message) {
+  sendMessagePromisified(message, options) {
     // notice: all worker responses except the first will be ignored
     return new Promise((resolve, reject) => {
-      const unsubscribe = this.sendMessage(message, (err, res) => {
-        unsubscribe()
-        if (err) reject(err)
-        else resolve(res)
-      })
+      const unsubscribe = this.sendMessage(
+        message,
+        (err, res) => {
+          unsubscribe()
+          if (err) reject(err)
+          else resolve(res)
+        },
+        options
+      )
     })
   }
 
-  async createWorkerContext()  {
+  async createWorkerContext() {
     const contextId = await this.sendMessagePromisified({
       activityName: 'createContext',
     })
@@ -97,8 +109,50 @@ class ExtendedWorker {
     }
   }
 
+  enableSubWorkers(contextId) {
+    let callId
+    let unsubscribes = []
+
+    const listenForRequests = async (err, res = {}) => {
+      if (err) throw err
+      if (res.requestName !== 'callSubWorkerMethod') return
+
+      const subWorker = await this.useAnotherWorker(res.workerPath)
+      unsubscribes.push(subWorker.destroyContext)
+
+      const message = await subWorker[res.methodName](...res.args)
+        .then((result) => ({ result, error: null }))
+        .catch((error) => ({ result: null, error }))
+
+      this.sendMessagePromisified(
+        {
+          activityName: 'receiveSubWorkerMethodCallResult',
+          contextId,
+          requestId: res.requestId,
+          ...message,
+        },
+        { callId }
+      )
+    }
+
+    const unsubscribe = this.sendMessage(
+      {
+        activityName: 'enableSubWorkers',
+        contextId,
+      },
+      listenForRequests,
+      {
+        informAboutCallId: (id) => (callId = id),
+      }
+    )
+    unsubscribes.push(unsubscribe)
+
+    return () => unsubscribes.map((unsubscribe) => unsubscribe())
+  }
+
   async useWorker() {
     const { contextId, destroyContext } = await this.createWorkerContext()
+    const destroySubWorkers = await this.enableSubWorkers(contextId)
 
     const workerMethods = await this.getWorkerMethods(contextId)
 
@@ -107,7 +161,10 @@ class ExtendedWorker {
 
     return {
       ...workerMethods,
-      destroyContext,
+      destroyContext: () => {
+        destroyContext()
+        destroySubWorkers()
+      },
       subscribeToWorkerPublicState,
     }
   }
@@ -146,5 +203,5 @@ const workersPool = new WorkersPool()
 
 export const useWorker = async (workerPath) => {
   const { getWorker, terminateWorker } = workersPool.manage(workerPath)
-  return new ExtendedWorker(getWorker, terminateWorker).useWorker()
+  return new ExtendedWorker(getWorker, terminateWorker, useWorker).useWorker()
 }
