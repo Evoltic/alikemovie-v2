@@ -1,6 +1,4 @@
 // outside main thread
-import { lowercaseFirstLetter } from '/functions/lowercaseFirstLetter'
-
 class Contexts {
   constructor() {
     this.contexts = {}
