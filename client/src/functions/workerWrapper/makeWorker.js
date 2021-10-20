@@ -76,7 +76,7 @@ const handlers = {
   },
   getMethodsList: ({}, { methods }) => Object.keys(methods ? methods : {}),
   callWorkerMethod: ({ methodName, contextId, args }, { classes, methods }) => {
-    const context = classes.contexts[contextId]
+    const context = classes.contexts.contexts[contextId]
     return methods[methodName].apply(context, args)
   },
 }
