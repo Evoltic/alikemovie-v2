@@ -1,15 +1,7 @@
-// TODO: .addResources method expects that some arguments are a function type,
-//  so, the method couldn't be used with the current web worker implementation.
-//  either the method must be rewritten without expecting a function type,
-//  or the worker implementation must be changed, so it could allow a function
-//  type be shared across workers
-
 class Cache {
   constructor(options = {}) {
-    const {
-      maximumResourcesLimit = 1000,
-      minimumResourcesLimit = 800
-    } = options
+    const { maximumResourcesLimit = 1000, minimumResourcesLimit = 800 } =
+      options
 
     this.resources = {}
     this.groups = new Map()
@@ -29,8 +21,8 @@ class Cache {
   removeResource(resourceKey) {
     delete this.resources[resourceKey]
 
-    for (const groupKey of this.groups) {
-      if (this.groups[groupKey].has(resourceKey)) delete this.groups[groupKey]
+    for (const [groupKey, group] of this.groups) {
+      if (group.has(resourceKey)) this.groups.delete(groupKey)
     }
 
     this.resourcesKeysInUsageOrder.delete(resourceKey)
@@ -75,7 +67,15 @@ class Cache {
     return this.getResources(this.groups.get(groupKey), shouldBeArray)
   }
 
-  addResources(resources, uniteSameResource, groupKey, resolveResourceKey) {
+  addResources(resources, options = {}) {
+    const {
+      groupKey,
+      uniteSameResource = (current, old) => ({ ...old, ...current }),
+      resolveResourceKey = typeof options.fieldWithResourceKey !== 'undefined'
+        ? (resource) => resource[options.fieldWithResourceKey]
+        : undefined,
+    } = options
+
     for (const index in resources) {
       const resource = resources[index]
       const key = resolveResourceKey ? resolveResourceKey(resource) : index
