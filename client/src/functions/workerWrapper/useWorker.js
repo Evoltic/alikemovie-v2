@@ -180,7 +180,12 @@ export class WorkersPool {
   }
 }
 
-const workersPool = new WorkersPool()
+const workersPool = new WorkersPool({
+  permanentWorkers: [
+    '/functions/serverApi/index.worker.js',
+    '/functions/cache/index.worker.js',
+  ],
+})
 
 let counter = 0
 export const useWorker = async (workerPath) => {
