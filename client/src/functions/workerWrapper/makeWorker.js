@@ -53,9 +53,10 @@ class State {
 }
 
 class SubWorkers {
-  constructor(askMainThread) {
+  constructor(askMainThread, contextId) {
     this.askMainThread = askMainThread
     this.nextId = 0
+    this.contextId = contextId
     this.listeners = {}
   }
 
@@ -65,6 +66,7 @@ class SubWorkers {
 
     this.askMainThread({
       requestName: 'callSubWorkerMethod',
+      contextId: this.contextId,
       requestId: id,
       workerPath,
       methodName,
@@ -77,6 +79,7 @@ class SubWorkers {
   }
 
   receiveMethodCallResult = ({ requestId, result, error }) => {
+    if (!this.listeners[requestId]) return
     const { resolve, reject } = this.listeners[requestId]
     delete this.listeners[requestId]
     if (error) reject(error)
@@ -85,30 +88,30 @@ class SubWorkers {
 }
 
 const handlers = {
-  createContext: ({}, { classes }) => {
-    const id = classes.contexts.createContext()
-    classes.contexts.extendContext(id, {
-      state: new classes.State(),
+  createContext: ({}, { classes, answer }) => {
+    const contextId = classes.contexts.createContext()
+
+    const state = new classes.State()
+    const subWorkers = new SubWorkers(answer, contextId)
+
+    classes.contexts.extendContext(contextId, {
+      state,
+      subWorkers,
     })
-    return id
+    classes.subWorkersHandlers.set(
+      contextId,
+      subWorkers.receiveMethodCallResult
+    )
+
+    return contextId
   },
   destroyContext: ({ contextId }, { classes }) => {
+    classes.subWorkersHandlers.delete(contextId)
     return classes.contexts.destroyContext(contextId)
   },
-  enableSubWorkers: ({ contextId }, { classes, answer, callId }) => {
-    const subWorkers = new SubWorkers(answer)
-
-    classes.answerTracker.set(callId, subWorkers.receiveMethodCallResult)
-    classes.contexts.extendContext(contextId, { subWorkers })
-  },
-  receiveSubWorkerMethodCallResult: (
-    { contextId, ...rest },
-    { classes, callId }
-  ) => {
-    const handler = classes.answerTracker.get(callId)
-    if (!handler) return
-    classes.answerTracker.delete(callId)
-    handler(rest)
+  receiveSubWorkerMethodCallResult: ({ contextId, ...rest }, { classes }) => {
+    const handler = classes.subWorkersHandlers.get(contextId)
+    if (handler) handler(rest)
   },
   subscribeToPublicState: ({ contextId }, { classes, answer }) => {
     const context = classes.contexts[contextId]
@@ -131,7 +134,7 @@ const handlers = {
 function makeWorker(methods) {
   const classes = {
     contexts: new Contexts(),
-    answerTracker: new Map(),
+    subWorkersHandlers: new Map(),
     State,
     SubWorkers,
   }
