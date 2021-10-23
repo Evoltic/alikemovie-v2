@@ -155,9 +155,10 @@ export class ExtendedWorker {
 
 export class WorkersPool {
   constructor(options = {}) {
-    const { createWorker } = options
+    const { createWorker, permanentWorkers = [] } = options
     this.createWorker = createWorker || ((workerPath) => new Worker(workerPath))
     this.workers = {}
+    this.permanentWorkers = permanentWorkers
   }
 
   manage(workerPath) {
@@ -169,6 +170,8 @@ export class WorkersPool {
         return this.workers[workerPath]
       },
       terminateWorker: () => {
+        if (this.permanentWorkers.includes(workerPath)) return
+
         const worker = this.workers[workerPath]
         delete this.workers[workerPath]
         worker.terminate()
