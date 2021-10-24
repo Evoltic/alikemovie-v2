@@ -15,20 +15,16 @@ export const SimilarMovies = attachWorker(
     }
 
     async componentDidMount() {
-      // TODO: check in cache first
-
       const {
         items = [],
         isNotFound = false,
         isUnknownError = false,
       } = await this.props.workers[0]
-        .do('performServerMethod', 'getSimilarMovies', {
-          movieId: this.props.movieId,
+        .do('getSimilarMovies', this.props.movieId)
+        .catch((err) => {
+          console.log(err)
+          return { isUnknownError: true }
         })
-        .then((items) =>
-          items.length === 0 ? { isNotFound: true } : { items }
-        )
-        .catch((err) => ({ isUnknownError: true }))
 
       this.setState({ items, isNotFound, isUnknownError, isPending: false })
     }
@@ -44,5 +40,5 @@ export const SimilarMovies = attachWorker(
       )
     }
   },
-  '/functions/serverApi/index.worker.js'
+  '/components/similarMovies/index.worker.js'
 )
