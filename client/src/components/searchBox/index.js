@@ -87,13 +87,17 @@ export const SearchBox = attachWorker(
       const isThisSearchOutdated = this.searchesStarted > currentSearchNumber
       if (isThisSearchOutdated) return
 
-      this.setState({
-        items,
-        isNotFound,
-        hint,
-        isUnknownError,
-        isPending: false,
-      })
+      this.setState(
+        {
+          items,
+          isNotFound,
+          hint,
+          isUnknownError,
+          isPending: false,
+          currentItemIndex: 0,
+        },
+        () => this.openDropdown()
+      )
     }, 500)
 
     handleInputChange = (e) => {
