@@ -1,7 +1,7 @@
 // inside main thread
 
 export class ExtendedWorker {
-  constructor(worker, orderTermination, useAnotherExtendedWorker) {
+  constructor(worker, useAnotherExtendedWorker, orderTermination) {
     this.nextCallId = 0
 
     this.worker = worker
@@ -185,7 +185,7 @@ export class WorkersPool {
 const workersPool = new WorkersPool({
   createWorker: (workerPath, orderTermination) => {
     const worker = new Worker(workerPath)
-    return new ExtendedWorker(worker, orderTermination, useWorker)
+    return new ExtendedWorker(worker, useWorker, orderTermination)
   },
   permanentWorkers: [
     '/functions/serverApi/index.worker.js',
