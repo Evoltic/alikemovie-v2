@@ -8,9 +8,7 @@ describe('/functions/workerWrapper/useWorker', async () => {
       const createWorker = () => ({ someProp: 'someValue' })
       const workersPool = new WorkersPool({ createWorker })
 
-      const { getWorker } = workersPool.manage('abc')
-
-      const worker = getWorker()
+      const worker = workersPool.checkOut('abc')
       expect(worker).to.be.eql({ someProp: 'someValue' })
     })
 
@@ -18,15 +16,10 @@ describe('/functions/workerWrapper/useWorker', async () => {
       const createWorker = () => ({ terminate: () => {} })
       const workersPool = new WorkersPool({ createWorker })
 
-      const { getWorker: getWorkerAbc, terminateWorker: terminateWorkerAbc } =
-        workersPool.manage('abc')
-      const { getWorker: getWorkerXyz, terminateWorker: terminateWorkerXyz } =
-        workersPool.manage('xyz')
+      workersPool.checkOut('abc')
+      workersPool.checkOut('xyz')
 
-      getWorkerAbc()
-      getWorkerXyz()
-
-      terminateWorkerAbc()
+      workersPool.terminate('abc', () => {})
 
       expect(workersPool.workers['abc']).to.be.undefined
       expect(workersPool.workers['xyz']).to.not.undefined
@@ -37,11 +30,11 @@ describe('/functions/workerWrapper/useWorker', async () => {
     it('ensures that sendMessage sends passed messages', () => {
       let postedMessages = []
 
-      const extendedWorker = new ExtendedWorker(() => ({
+      const extendedWorker = new ExtendedWorker({
         postMessage: (message) => postedMessages.push(message),
         addEventListener: () => {},
         removeEventListener: () => {},
-      }))
+      })
 
       extendedWorker.sendMessage({ someValue: '1' })
       extendedWorker.sendMessage({ someValue: '2' })
@@ -59,11 +52,11 @@ describe('/functions/workerWrapper/useWorker', async () => {
     it('ensures that sendMessage correctly removes listeners', () => {
       const emitter = new EventEmitter()
 
-      const extendedWorker = new ExtendedWorker(() => ({
+      const extendedWorker = new ExtendedWorker({
         postMessage: () => {},
         addEventListener: (...args) => emitter.addListener(...args),
         removeEventListener: (...args) => emitter.removeListener(...args),
-      }))
+      })
 
       extendedWorker.sendMessage({})()
       extendedWorker.sendMessage({})()
@@ -84,11 +77,11 @@ describe('/functions/workerWrapper/useWorker', async () => {
 
       let sentMessages = []
 
-      const extendedWorker = new ExtendedWorker(() => ({
+      const extendedWorker = new ExtendedWorker({
         postMessage: (message) => sentMessages.push(message),
         addEventListener: (...args) => emitter.addListener(...args),
         removeEventListener: (...args) => emitter.removeListener(...args),
-      }))
+      })
 
       let lastResponse = undefined
       const callbackOnResponse = (error, result) =>
@@ -129,11 +122,11 @@ describe('/functions/workerWrapper/useWorker', async () => {
 
       let sentMessages = []
 
-      const extendedWorker = new ExtendedWorker(() => ({
+      const extendedWorker = new ExtendedWorker({
         postMessage: (message) => sentMessages.push(message),
         addEventListener: (...args) => emitter.addListener(...args),
         removeEventListener: (...args) => emitter.removeListener(...args),
-      }))
+      })
 
       const promise1 = extendedWorker.sendMessagePromisified({ v: 'a' })
       const promise2 = extendedWorker.sendMessagePromisified({ v: 'b' })

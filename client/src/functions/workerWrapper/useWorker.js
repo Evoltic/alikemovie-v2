@@ -1,17 +1,20 @@
 // inside main thread
 
 export class ExtendedWorker {
-  constructor(getWorker, terminateWorker, useAnotherWorker, callIdDistinction) {
+  constructor(worker, orderTermination, useAnotherExtendedWorker) {
     this.nextCallId = 0
-    this.callIdDistinction = callIdDistinction || ''
 
-    this.worker = getWorker()
-    this.terminateWorker = terminateWorker
-    this.useAnotherWorker = useAnotherWorker
+    this.worker = worker
+    this.orderTermination = orderTermination || ((terminate) => terminate())
+    this.useAnotherExtendedWorker = useAnotherExtendedWorker
+  }
+
+  terminate() {
+    this.orderTermination(() => this.worker.terminate())
   }
 
   sendMessage(message, callBackOnResponse) {
-    const callId = `${this.callIdDistinction}-${this.nextCallId}`
+    const callId = this.nextCallId
     this.nextCallId++
 
     this.worker.postMessage({ ...message, callId })
@@ -60,7 +63,7 @@ export class ExtendedWorker {
       activityName: 'destroyContext',
       contextId,
     })
-    if (contextsLeft === 0) this.terminateWorker()
+    if (contextsLeft === 0) this.terminate()
   }
 
   async getMethods(contextId) {
@@ -113,7 +116,7 @@ export class ExtendedWorker {
     let subWorker
 
     try {
-      subWorker = await this.useAnotherWorker(workerPath)
+      subWorker = await this.useAnotherExtendedWorker(workerPath)
       const result = await subWorker[methodName](...args)
       await subWorker.destroyContext()
 
@@ -129,7 +132,7 @@ export class ExtendedWorker {
     })
   }
 
-  async useWorker() {
+  async use() {
     const contextId = await this.createContext()
 
     const removeSubWorkerCallListener = this.listenForRequest(
@@ -156,45 +159,41 @@ export class ExtendedWorker {
 export class WorkersPool {
   constructor(options = {}) {
     const { createWorker, permanentWorkers = [] } = options
-    this.createWorker = createWorker || ((workerPath) => new Worker(workerPath))
+    this.createWorker = createWorker
     this.workers = {}
     this.permanentWorkers = permanentWorkers
   }
 
-  manage(workerPath) {
-    return {
-      getWorker: () => {
-        if (this.workers[workerPath]) return this.workers[workerPath]
+  checkOut(workerPath) {
+    if (this.workers[workerPath]) return this.workers[workerPath]
 
-        this.workers[workerPath] = this.createWorker(workerPath)
-        return this.workers[workerPath]
-      },
-      terminateWorker: () => {
-        if (this.permanentWorkers.includes(workerPath)) return
+    const orderTermination = (terminateWorker) =>
+      this.terminate(workerPath, terminateWorker)
 
-        const worker = this.workers[workerPath]
-        delete this.workers[workerPath]
-        worker.terminate()
-      },
-    }
+    this.workers[workerPath] = this.createWorker(workerPath, orderTermination)
+    return this.workers[workerPath]
+  }
+
+  terminate(workerPath, terminateWorker) {
+    if (this.permanentWorkers.includes(workerPath)) return
+
+    delete this.workers[workerPath]
+    terminateWorker()
   }
 }
 
 const workersPool = new WorkersPool({
+  createWorker: (workerPath, orderTermination) => {
+    const worker = new Worker(workerPath)
+    return new ExtendedWorker(worker, orderTermination, useWorker)
+  },
   permanentWorkers: [
     '/functions/serverApi/index.worker.js',
     '/functions/cache/index.worker.js',
   ],
 })
 
-let counter = 0
 export const useWorker = async (workerPath) => {
-  counter++
-  const { getWorker, terminateWorker } = workersPool.manage(workerPath)
-  return new ExtendedWorker(
-    getWorker,
-    terminateWorker,
-    useWorker,
-    counter
-  ).useWorker()
+  const extendedWorker = workersPool.checkOut(workerPath)
+  return extendedWorker.use()
 }
