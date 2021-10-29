@@ -109,7 +109,7 @@ const moviesFiller = new MoviesFiller(
     'title.akas': async function (row) {
       const [imdbId, ordering, title, region, language, types, attributes] = row
 
-      const isOriginalTitle = row[7] == 1 ? true : false
+      const isOriginalTitle = row[7] === '1'
       const isRegionOk = region === 'US' || region === 'RU'
       const isLanguageOk = language === 'en' || language === 'ru'
 
