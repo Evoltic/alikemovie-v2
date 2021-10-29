@@ -155,7 +155,9 @@ const moviesFiller = new MoviesFiller(
   },
   {
     handleError: (e) => {
-      if (e.routine === 'ExecConstraints') return
+      const isNotNullViolation = e.code === '23502'
+      if (isNotNullViolation) return
+
       logger.error(e)
     },
     updateProgress: (key, status) => {
