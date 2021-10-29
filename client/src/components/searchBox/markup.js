@@ -77,6 +77,11 @@ export const Markup = (props) => {
                 onClick={(e) => handleItemClick(e, i)}
                 key={item.id}
               >
+                {item.type === 'tvSeries' && (
+                  <p className="search-box__tv-label" title="TV series">
+                    tv
+                  </p>
+                )}
                 <SmartImage
                   className="search-box__item-image"
                   src={
@@ -85,7 +90,9 @@ export const Markup = (props) => {
                   alt={item.title}
                 />
                 <div className="search-box__item-text">
-                  <p className="search-box__item-title">{item.title}</p>
+                  <p className="search-box__item-title">
+                    {item.title} {item.type === 'tvSeries' && '(TV Series)'}
+                  </p>
                   <p className="search-box__item-year">{item.startyear}</p>
                 </div>
               </div>

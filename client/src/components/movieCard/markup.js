@@ -4,8 +4,17 @@ import { SmartImage } from '/components/smartImage'
 import { SimilarityIndicator } from '/components/similarityIndicator'
 
 export const Markup = (props) => {
-  const { id, title, startyear, endyear, genres, score, maxScore, isLoading } =
-    props
+  const {
+    id,
+    title,
+    startyear,
+    endyear,
+    genres,
+    type,
+    score,
+    maxScore,
+    isLoading,
+  } = props
 
   return (
     <div className="movie-card">
@@ -17,12 +26,17 @@ export const Markup = (props) => {
             alt={`${title}`}
           />
         )}
+        {type === 'tvSeries' && (
+          <p className="movie-card__tv-label" title="TV Series">
+            tv
+          </p>
+        )}
       </div>
       <div className="movie-card__main">
         <h2 className="movie-card__title">
           <span className="movie-card__title-name">{title}</span>
           <span className="movie-card__title-year">
-            {(endyear ? `${endyear} - ` : '') + (startyear || '')}
+            {(startyear || '') + (endyear ? ` - ${endyear}` : '')}
           </span>
         </h2>
         <div className="movie-card__chips">
@@ -38,7 +52,14 @@ export const Markup = (props) => {
             value={score}
             maxValue={maxScore}
             minValue={0}
-            words={['Very similar', 'Quite similar', 'A bit similar']}
+            words={[
+              'Exact match',
+              'Very similar',
+              'Pretty similar',
+              'Quite similar',
+              'A bit similar',
+              '',
+            ]}
           />
         )}
       </div>

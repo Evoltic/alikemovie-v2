@@ -112,6 +112,7 @@
   }
 
   &__item {
+    position: relative;
     display: flex;
     align-items: center;
     padding: $paddingY $paddingX;
@@ -125,6 +126,17 @@
 
   &__item_active {
     background-color: $backColor1;
+  }
+
+  &__tv-label {
+    @extend .caption;
+    position: absolute;
+    top: $halfPaddingY;
+    left: $halfPaddingY;
+    padding: $halfPaddingY $halfPaddingX;
+    background-color: $contrastColor1;
+    color: $colorOnContrastColor10;
+    border-radius: $borderRadius;
   }
 
   &__item-image {

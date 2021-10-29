@@ -11,6 +11,8 @@
   transition: box-shadow 0.1s, background 60ms ease-in 0s;
 
   &__aside {
+    position: relative;
+
     @include respond-above(xs) {
       height: 14em;
       width: 10.5em;
@@ -36,6 +38,18 @@
     height: 100%;
     object-fit: cover;
     border-radius: $borderRadius 0 0 $borderRadius;
+  }
+
+  &__tv-label {
+    @extend .caption;
+    position: absolute;
+    top: $halfPaddingY;
+    left: $halfPaddingY;
+    padding: $halfPaddingY $halfPaddingX;
+    background-color: $contrastColor1;
+    color: $colorOnContrastColor10;
+    border-radius: $borderRadius;
+    cursor: default;
   }
 
   &__main {

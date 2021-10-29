@@ -2,7 +2,7 @@
 
 .similarity-indicator {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   cursor: default;
 
   &__label {
@@ -11,7 +11,8 @@
 
   &__circle {
     display: block;
-    margin-left: $halfPaddingX;
+    order: -1;
+    margin-right: $halfPaddingX;
     width: 1em;
     height: 1em;
     border-radius: $borderRadius;
