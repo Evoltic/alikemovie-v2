@@ -9,7 +9,7 @@ const moviesSearch = new (class {
       INSERT INTO moviesDocuments (movieid, document)
       SELECT
         movieid,
-        setweight(to_tsvector(string_agg(title, '; ')), 'A')
+        setweight(to_tsvector('russian', string_agg(title, '; ')), 'A')
       FROM moviestitles
       WHERE
         region = 'US' OR
@@ -38,7 +38,7 @@ const moviesSearch = new (class {
         `
         SELECT * FROM movies
         LEFT JOIN moviesDocuments ON movies.id = moviesDocuments.movieId
-        WHERE document @@ plainto_tsquery($1) 
+        WHERE document @@ plainto_tsquery('russian', $1) 
         AND movies.type = ANY ($2)
         AND runtimeMinutes IS NOT NULL
       `,
