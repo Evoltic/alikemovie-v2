@@ -29,7 +29,7 @@ const postgreSql = new PostgreSql(
     
     CREATE TABLE IF NOT EXISTS castAndCrew (
       id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-      imdbId VARCHAR(100) UNIQUE,
+      imdbId VARCHAR(100) NOT NULL UNIQUE,
       name VARCHAR(1000) NOT NULL,
       birthYear SMALLINT,
       deathYear SMALLINT,
