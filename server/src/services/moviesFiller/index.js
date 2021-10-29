@@ -70,9 +70,9 @@ class MoviesFiller {
     }
 
     await checkDownloadSaveNotify('title.basics')
-    checkDownloadSaveNotify('title.akas')
     await checkDownloadSaveNotify('name.basics')
     await checkDownloadSaveNotify('title.principals')
+    await checkDownloadSaveNotify('title.akas')
   }
 }
 
