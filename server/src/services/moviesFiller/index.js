@@ -1,5 +1,6 @@
-const { Writable, finished } = require('stream')
+const { Writable } = require('stream')
 const { ImdbDatasets } = require('../imdbDatasets')
+const { StreamFileMiddleware } = require('../streamFileMiddleware')
 
 class MoviesFiller {
   constructor(savers, hooks = {}, optional = {}) {
@@ -17,6 +18,11 @@ class MoviesFiller {
     } = optional
     this.handleError = handleError
     this.updateProgress = updateProgress
+
+    this.streamFileMiddleware = new StreamFileMiddleware({
+      temporaryDirectoryPath: __dirname + '/tmp',
+      handleError: (e) => handleError(e),
+    })
   }
 
   async downloadAndSave(datasetKey) {
@@ -44,11 +50,11 @@ class MoviesFiller {
     })
 
     try {
-      await new Promise((resolve, reject) => {
-        finished(readableStream.pipe(writableStream), (err) => {
-          err ? reject(err) : resolve()
-        })
-      })
+      await this.streamFileMiddleware.process(
+        readableStream,
+        writableStream,
+        datasetKey
+      )
     } finally {
       await this.hooks.callAfterSaveOperations.call(context)
     }
