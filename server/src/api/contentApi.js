@@ -13,7 +13,7 @@ const routes = [
 ]
 
 function setupContentApi() {
-  const port = process.env.CONTENT_SERVER_PORT
+  const port = process.env.CONTENT_SERVER_PORT || 3081
   const app = express()
 
   app.use(bodyParser.urlencoded({ extended: false }))

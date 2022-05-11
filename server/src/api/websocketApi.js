@@ -76,7 +76,7 @@ function handleMessageFromClient(
 }
 
 function setupWebsocketApi() {
-  const port = process.env.WEBSOCKET_SERVER_PORT
+  const port = process.env.WEBSOCKET_SERVER_PORT || 3080
 
   const websocketServer = new WebSocket.Server({ port }, () =>
     logger.info(`the websocket server is listening on port ${port}`)
