@@ -2,6 +2,16 @@
 
 A monorepo for both frontend and backend code.
 
+# Branches
+
+- ```master``` branch is the main branch, but it is not recommended for
+  production use.
+- ```v*.*.*``` (e.g. v1.0.0) branch is a snapshot of the master branch,
+  they are recommended for production use.
+- ```feature/*``` (e.g. feature/docker) branch is a development branch
+  with a context. The branch lifecycle: branched from the master -> 
+  collects commits -> merged to the master -> deleted.
+
 # Run a production version
 
 ``docker compose up``
