@@ -30,6 +30,11 @@ const commonConfig = {
   experiments: {
     asset: true,
   },
+  plugins: [
+    new Dotenv({
+      defaults: true, // load '.env.defaults' as the default values if empty
+    }),
+  ],
 }
 
 const mainConfig = {
@@ -97,6 +102,7 @@ const mainConfig = {
     ],
   },
   plugins: [
+    ...commonConfig.plugins,
     ...pages.map(
       (page) =>
         new HtmlWebpackPlugin({
@@ -135,12 +141,12 @@ const mainConfig = {
         })
     ),
     new MiniCssExtractPlugin(),
-    new Dotenv(),
   ],
 }
 
 const workersConfig = {
   ...commonConfig,
+  plugins: [...commonConfig.plugins],
   target: 'webworker',
   entry: {
     ...workers.reduce(
@@ -162,7 +168,6 @@ const workersConfig = {
       },
     ],
   },
-  plugins: [new Dotenv()],
 }
 
 module.exports = [mainConfig, workersConfig]
