@@ -6,7 +6,8 @@
     "node": ">=v14.14.0"
   },
   "scripts": {
-    "start": "npm run build && node ./serve.js",
+    "start": "npm run build && npm run serve",
+    "serve": "node ./serve.js",
     "build": "cross-env NODE_ENV=production webpack --config webpackConfig.js",
     "dev": "cross-env NODE_ENV=development node ./devServer.js",
     "test": "cross-env NODE_ENV=test mocha --require @babel/register  \"./src/**/*.test.js\" --timeout 1500 --exit"
