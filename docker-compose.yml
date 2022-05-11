@@ -1,0 +1,30 @@
+services:
+  client:
+    build: ./client
+    ports:
+      - "${FRONTEND_PORT-8000}:8000"
+
+  server:
+    build: ./server
+    ports:
+      - "${WEBSOCKET_SERVER_PORT-3080}:3080"
+      - "${CONTENT_SERVER_PORT-3081}:3081"
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRESQL_USER=${POSTGRESQL_USER-postgres}
+      - POSTGRESQL_HOST=${POSTGRESQL_HOST-postgres}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE-postgres}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD-unsafePassword}
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT-5432}
+      - THEMOVIEDB_API_KEY=${THEMOVIEDB_API_KEY}
+      - IS_NOT_MAIN_INSTANCE=${IS_NOT_MAIN_INSTANCE}
+
+  postgres:
+    build: ./db/postgres
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER-postgres}
+      - POSTGRES_DATABASE=${POSTGRESQL_DATABASE-postgres}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD-unsafePassword}
