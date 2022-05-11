@@ -38,7 +38,7 @@ function start() {
     )
   })
 
-  const port = process.env.PORT || 8000
+  const port = process.env.FRONTEND_PORT || 8000
   app.listen(port, () => console.log(`\nthe server is listening on ${port} \n`))
 }
 start()
