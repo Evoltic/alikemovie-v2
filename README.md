@@ -2,17 +2,100 @@
 
 A monorepo for both frontend and backend code.
 
+# Run a production version
+
+``docker compose up``
+
+or
+
+```
+cd ./client
+npm i
+npm start 
+
+cd ..
+
+cd ./server
+npm i
+npm start
+
+// Reminder: place db credentials to ./server/.env;
+//           the db could be setup by docker (./db/.../Dockerfile).
+```
+
+# Run a development version
+
+```
+cd ./client
+npm i
+npm run dev 
+
+cd ..
+
+cd ./server
+npm i
+npm run dev
+
+// Reminder: place db credentials to ./server/.env;
+//           the db could be setup by docker (./db/.../Dockerfile).
+```
+
+# About .env
+
+## Docker scenario:
+
+### 1. Create ./.env
+
+"THEMOVIEDB_API_KEY" var is required if database empty.
+
+Specify any other variable (in ./.env) supported by
+./client/.env and ./server/.env to overwrite defaults if needed.
+
+### 2. Skip ./client/.env
+
+### 3. Skip ./server/.env
+
+## Another scenario:
+
+### 1. Skip ./.env
+
+### 2. (optional) Create ./client/.env 
+
+Optional, because of fallback to ./client/.env.defaults.
+
+#### Available vars:
+
+- WEBSOCKET_API_URL
+- CONTENT_API_URL
+
+not supported in ./client/.env file, but available via a shell / docker:
+- FRONTEND_PORT
+
+### 3. (required) Create ./server/.env 
+
+#### Available vars
+
+- POSTGRESQL_USER
+- POSTGRESQL_HOST
+- POSTGRESQL_DATABASE
+- POSTGRESQL_PASSWORD
+- POSTGRESQL_PORT  
+  or
+- POSTGRESQL_CONNECTION_STRING (not supported in docker scenario)
+-
+- WEBSOCKET_SERVER_PORT
+- CONTENT_SERVER_PORT
+- IS_NOT_MAIN_INSTANCE
+- IS_AIM_TO_POPULATE_DATABASE
+- THEMOVIEDB_API_KEY
+- AVAILABLE_BYTES_FOR_POSTERS
+
 # The frontend
 
 This is a typical Single Page Application, but with prerender.
 The type of the content that would be prerendered is the skeleton - the parts
 that always static (titles of sections, navbar, footer, placeholders etc).  
 There is no Server Side Rendering.
-
-## .env
-
-- WEBSOCKET_API_URL
-- CONTENT_API_URL
 
 ## UI Components
 
@@ -118,23 +201,6 @@ so, a page has two "page files": .js and .css.
 Todo 
 
 # The backend
-
-## .env
-
-- POSTGRESQL_USER
-- POSTGRESQL_HOST
-- POSTGRESQL_DATABASE
-- POSTGRESQL_PASSWORD
-- POSTGRESQL_PORT  
-  or
-- POSTGRESQL_CONNECTION_STRING
--
-- WEBSOCKET_SERVER_PORT
-- CONTENT_SERVER_PORT
-- IS_NOT_MAIN_INSTANCE
-- IS_AIM_TO_POPULATE_DATABASE
-- THEMOVIEDB_API_KEY
-- AVAILABLE_BYTES_FOR_POSTERS
 
 ## Communicating with the server
 
