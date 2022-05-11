@@ -1,6 +1,8 @@
 import { makeWorker } from '/functions/workerWrapper/makeWorker'
 
 async function getSimilarMovies(movieId) {
+  // TODO: resolve an issue with overwriting movie score
+
   const cacheGroupName = `similar movies for ${movieId}`
 
   const resultFromCache = await this.subWorkers.callMethod(
