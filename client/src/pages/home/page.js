@@ -12,10 +12,10 @@ export default () => {
               created by{' '}
               <a
                 className="page__link"
-                href="https://evoltic.github.io/"
+                href="https://voltic.ru/"
                 target="_blank"
               >
-                evoltic
+                voltic
               </a>
             </p>
           </div>
