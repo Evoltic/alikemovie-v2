@@ -98,7 +98,7 @@ export const SearchBox = attachWorker(
         },
         () => this.openDropdown()
       )
-    }, 500)
+    }, 600)
 
     handleInputChange = (e) => {
       const inputValue = e.target.value
