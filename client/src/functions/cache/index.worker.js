@@ -1,5 +1,5 @@
 import { Cache } from './index.js'
-import { makeWorker } from '/functions/workerWrapper/makeWorker'
+import { makeWorker } from 'extended-worker/makeWorker'
 
 const cache = new Cache()
 

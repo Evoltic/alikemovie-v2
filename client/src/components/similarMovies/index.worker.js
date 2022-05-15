@@ -1,4 +1,4 @@
-import { makeWorker } from '/functions/workerWrapper/makeWorker'
+import { makeWorker } from 'extended-worker/makeWorker'
 
 async function getSimilarMovies(movieId) {
   // TODO: resolve an issue with overwriting movie score

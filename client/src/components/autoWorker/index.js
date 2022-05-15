@@ -1,5 +1,5 @@
 import React from 'react'
-import { AutoWorker } from '/functions/workerWrapper/autoWorker'
+import { AutoWorker } from 'extended-worker/autoWorker'
 
 function attachWorker(OriginalComponent, workerPath) {
   class ModifiedComponent extends React.Component {

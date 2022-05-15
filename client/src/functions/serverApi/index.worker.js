@@ -1,5 +1,5 @@
 import { ServerApi } from './index.js'
-import { makeWorker } from '/functions/workerWrapper/makeWorker'
+import { makeWorker } from 'extended-worker/makeWorker'
 
 const serverApi = new ServerApi()
 
@@ -23,12 +23,11 @@ function performServerMethodAndWriteToState(methodName, data = {}) {
 }
 
 const writeToStateOnServerApiGeneralError = () => {
-  serverApi.handleGeneralError = error =>
-    this.setPublicState(() => error)
+  serverApi.handleGeneralError = (error) => this.setPublicState(() => error)
 }
 
 makeWorker({
   performServerMethod,
   performServerMethodAndWriteToState,
-  writeToStateOnServerApiGeneralError
+  writeToStateOnServerApiGeneralError,
 })

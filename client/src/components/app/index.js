@@ -3,7 +3,13 @@ import { Router } from '/components/router'
 import pages from '/pages'
 import { Navbar } from '/components/navbar'
 import { LoadingCircle } from '/components/loadingCircle'
+import { setPermanentWorkers } from 'extended-worker/useWorker'
 import './index.scss'
+
+setPermanentWorkers([
+  '/functions/serverApi/index.worker.js',
+  '/functions/cache/index.worker.js',
+])
 
 let isTheOnlyAppCreated = false
 let updateTheOnlyAppState = () => {
