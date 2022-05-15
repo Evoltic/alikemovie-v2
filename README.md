@@ -145,34 +145,28 @@ The main thread could listen for the second thread state changes.
 The workflow with a worker:  
 worker (1) - worker wrapper (2) - middleware (3) - initiator (4)
 
+The lib used: https://github.com/Evoltic/extended-worker
+
 ### 1. Worker (/src/\*\*/*.worker.js)
 
 Methods that should be run inside a worker are defined there.
 
-### 2. Worker wrapper (/src/function/workerWrapper/makeWorker.js)
+### 2. Worker wrapper (extended-worker/makeWorker.js)
 
-Each worker is wrapped by the worker wrapper to take off such things from a
-.worker.js file:
+Each worker is wrapped by the worker wrapper.
 
-- creating a new context for every initiator;
-- providing a set of available methods of a worker to an initiator;
-- managing a worker public state;
+### 3. Middleware (extended-worker/useWorker.js)
 
-Each initiator has an independent worker context. 
-
-### 3. Middleware (/src/function/workerWrapper/useWorker.js)
-
-The middleware is a bridge between a worker (wrapped by the worker wrapper) 
+The middleware is a bridge between a worker (wrapped by ```makeWorker```) 
 and an initiator. 
 
-The main role of the bridge is just to 
-make communication with the worker easier.  
-It provides:
-- a set of worker methods, defined in a .worker.js file;
-- "subscribe to worker state" function;
-- "destroy the context" function (if the initiator no longer needs a worker).
+### 3.5. An additional middleware (src/components/autoWorker/index.js)
 
-### 3. Initiator
+To sync a worker lifecycle with a component lifecycle 
+most of the time ```attachWorker``` is used instead of ```makeWorker```. 
+Under the hood: ```attachWorker``` is built on top of ```makeWorker```.
+
+### 4. Initiator
 
 An initiator could be a function, component, etc. 
 anything that needs to call a worker method.
