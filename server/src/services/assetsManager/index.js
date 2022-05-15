@@ -1,3 +1,5 @@
+const { TemporaryDirectory } = require('../../functions/temporaryDirectory')
+
 class AssetsManager {
   constructor(optional = {}) {
     const {
@@ -8,10 +10,13 @@ class AssetsManager {
     } = optional
 
     this.fs = fs
-    this.basePath = __dirname + `/assets/${groupName}-`
+    this.tmpPath = __dirname + `/tmp`
+    this.basePath = this.tmpPath + `/${groupName}-`
 
     this.availableBytes = availableBytes
     this.handleLimitError = handleLimitError
+
+    new TemporaryDirectory(this.tmpPath, { filesystem: this.fs })
   }
 
   async saveAsset(fileName, data) {
