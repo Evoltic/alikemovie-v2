@@ -56,7 +56,7 @@ npm run dev
 
 ### 1. Create ./.env
 
-"THEMOVIEDB_API_KEY" var is required if database empty.
+"THEMOVIEDB_API_KEY" var is required for posters download.
 
 Specify any other variable (in ./.env) supported by
 ./client/.env and ./server/.env to overwrite defaults if needed.
