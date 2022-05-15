@@ -11,3 +11,5 @@ package-lock.json
 
 /server/.env
 /server/package-lock.json
+/server/src/services/moviesFiller/tmp
+/server/src/services/assetsManager/tmp
