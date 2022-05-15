@@ -36,7 +36,7 @@ export const Markup = (props) => {
       <div className="search-box__input-container">
         <input
           className="search-box__input"
-          placeholder="Введите название фильма"
+          placeholder="Search your favorite movie"
           value={inputValue}
           onClick={openDropdown}
           onChange={handleInputChange}
@@ -47,19 +47,19 @@ export const Markup = (props) => {
       <div className="search-box__dropdown">
         <div className="search-box__dropdown-box">
           {isPending && (
-            <p className="search-box__loading-hint">Идет поиск...</p>
+            <p className="search-box__loading-hint">Searching...</p>
           )}
           {isNotFound && !isPending && (
-            <p className="search-box__not-found-hint">Ничего не найдено</p>
+            <p className="search-box__not-found-hint">Nothing found</p>
           )}
           {isUnknownError && !isPending && (
             <p className="search-box__error-hint">
-              Упс... Что-то пошло не так, попробуйте изменить запрос
+              Ops... Something went wrong, try changing the query
             </p>
           )}
           {hint && !isPending && (
             <p className="search-box__improvement-hint">
-              <span className="search-box__hint-label">Подсказка:</span>
+              <span className="search-box__hint-label">Hint:</span>
               <span className="search-box__hint-description">{hint}</span>
             </p>
           )}
