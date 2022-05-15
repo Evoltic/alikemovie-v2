@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import { CoexistingPages } from './index'
 
-describe('/functions/сoexistingPages', function () {
-  context('СoexistingPages', () => {
+describe('/functions/coexistingPages', function () {
+  context('CoexistingPages', () => {
     it('ensures .add adds to list and maintains passed component', () => {
       const pages = new CoexistingPages()
       pages.add('example')
