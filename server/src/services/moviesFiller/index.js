@@ -34,7 +34,7 @@ class MoviesFiller {
     let context = {}
 
     if (this.hooks.callBeforeSaveOperations) {
-      await this.hooks.callBeforeSaveOperations.call(context)
+      await this.hooks.callBeforeSaveOperations.call(context, datasetKey)
     }
 
     const writableStream = new Writable({
@@ -56,17 +56,22 @@ class MoviesFiller {
         datasetKey
       )
     } finally {
-      await this.hooks.callAfterSaveOperations.call(context)
+      await this.hooks.callAfterSaveOperations.call(context, datasetKey)
     }
   }
 
   async start() {
     const checkDownloadSaveNotify = (key) => {
       if (!this.savers[key]) return
+
       this.updateProgress(key, 'start')
+      const startTime = Date.now()
+
       return this.downloadAndSave(key)
         .catch((e) => this.handleError(e))
-        .finally(() => this.updateProgress(key, 'done'))
+        .finally(() =>
+          this.updateProgress(key, `done. took ${Date.now() - startTime} ms`)
+        )
     }
 
     await checkDownloadSaveNotify('title.basics')

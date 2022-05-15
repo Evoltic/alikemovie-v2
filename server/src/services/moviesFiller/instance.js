@@ -18,6 +18,8 @@ const moviesFiller = new MoviesFiller(
       ] = row
 
       if (titleType !== 'movie' && titleType !== 'tvSeries') return
+      if (!startYear) return
+      if (!runtimeMinutes) return
 
       return this.client.query(
         `
@@ -54,6 +56,9 @@ const moviesFiller = new MoviesFiller(
         knownForTitles,
       ] = row
 
+      if (!primaryName) return
+      if (!birthYear) return
+
       return this.client.query(
         `
         INSERT INTO castAndCrew (
@@ -76,38 +81,50 @@ const moviesFiller = new MoviesFiller(
       )
     },
     'title.principals': async function (row) {
+      const [movieImdbId, order, castAndCrewImdbId, category, job, characters] =
+        row
+
+      const movieId = this.idMap.movies[movieImdbId]
+      const castAndCrewId = this.idMap.cast[castAndCrewImdbId]
+
+      if (!movieId) return
+      if (!castAndCrewId) return
+
       return this.client.query(
         `
-        INSERT INTO moviesCastAndCrew(
+            INSERT INTO moviesCastAndCrew(
+              movieId,
+              castAndCrewId,
+              category,
+              job,
+              characters,
+              "order"
+            )
+            VALUES (
+              $1,
+              $2,
+              $3,
+              $4,
+              $5,
+              $6
+            )
+            ON CONFLICT (movieId, castAndCrewId) DO NOTHING
+          `,
+        [
           movieId,
           castAndCrewId,
           category,
           job,
-          characters,
-          "order"
-        )
-        VALUES(
-          (SELECT id FROM movies WHERE imdbId = $1),
-          (SELECT id FROM castAndCrew WHERE imdbId = $2),
-          $3,
-          $4,
-          $5,
-          $6
-        )
-        ON CONFLICT (movieId, castAndCrewId) DO NOTHING
-        `,
-        [
-          row[0],
-          row[2],
-          row[3],
-          row[4],
-          row[5] ? JSON.parse(row[5]) : undefined,
-          row[1],
+          characters ? JSON.parse(characters) : undefined,
+          order,
         ]
       )
     },
     'title.akas': async function (row) {
       const [imdbId, ordering, title, region, language, types, attributes] = row
+
+      const movieId = this.idMap.movies[imdbId]
+      if (!movieId) return
 
       const isOriginalTitle = row[7] === '1'
       const isRegionOk = region === 'US' || region === 'RU'
@@ -131,7 +148,7 @@ const moviesFiller = new MoviesFiller(
           isOriginalTitle
         )
         VALUES(
-          (SELECT id FROM movies WHERE imdbId = $1),
+          $1,
           $2,
           $3,
           $4,
@@ -141,23 +158,52 @@ const moviesFiller = new MoviesFiller(
         )
         ON CONFLICT (movieId, title, isOriginalTitle) DO NOTHING
         `,
-        [imdbId, ordering, title, region, language, attributes, isOriginalTitle]
+        [
+          movieId,
+          ordering,
+          title,
+          region,
+          language,
+          attributes,
+          isOriginalTitle,
+        ]
       )
     },
   },
   {
-    async callBeforeSaveOperations() {
+    async callBeforeSaveOperations(datasetKey) {
       this.client = await postgreSql.getClient()
+
+      const createMap = async (query) => {
+        const { rows } = await this.client.query(query)
+        let map = {}
+        for (const row of rows) map[row.imdbid] = row.id
+        return map
+      }
+
+      if (datasetKey === 'title.principals') {
+        this.idMap = {
+          movies: await createMap('SELECT id, imdbid FROM movies'),
+          cast: await createMap('SELECT id, imdbid FROM castAndCrew'),
+        }
+      }
+
+      if (datasetKey === 'title.akas') {
+        this.idMap = {
+          movies: await createMap('SELECT id, imdbid FROM movies'),
+        }
+      }
+
+      await this.client.query('BEGIN')
+      return
     },
-    callAfterSaveOperations() {
+    async callAfterSaveOperations(datasetKey) {
+      await this.client.query('COMMIT')
       this.client.release()
     },
   },
   {
     handleError: (e) => {
-      const isNotNullViolation = e.code === '23502'
-      if (isNotNullViolation) return
-
       logger.error(e)
     },
     updateProgress: (key, status) => {
