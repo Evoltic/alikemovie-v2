@@ -55,7 +55,11 @@ async function downloadPosterFromThirdParty(imdbId) {
     )
   }
 
-  const movie = await response.json().then((body) => body['movie_results'][0])
+  const body = await response.json()
+  const movie =
+    body['movie_results'].length > 0
+      ? body['movie_results'][0]
+      : body['tv_results'][0]
 
   if (typeof movie === 'undefined') {
     throw new ResourceNotFoundError(imdbId, 'themoviedb')
