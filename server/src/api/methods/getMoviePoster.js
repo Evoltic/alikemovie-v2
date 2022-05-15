@@ -3,6 +3,8 @@ const { ValidationError, ResourceNotFoundError } = require('../../errors')
 const { logger } = require('../../functions/logger')
 const { postgreSql } = require('../../services/postgreSql/instance')
 const { AssetsManager } = require('../../services/assetsManager')
+const { Resolver } = require('dns')
+const https = require('https')
 
 const postersManager = new AssetsManager({
   groupName: '/posters',
@@ -13,6 +15,17 @@ const postersManager = new AssetsManager({
   },
 })
 
+const resolver = new Resolver()
+resolver.setServers([process.env.DNS_SERVER_OPTIONAL || '9.9.9.9'])
+
+const lookupAddress = (hostname) => {
+  return new Promise((resolve, reject) => {
+    resolver.resolve4(hostname, (err, addresses) => {
+      err ? reject(err) : resolve(addresses)
+    })
+  })
+}
+
 async function downloadPosterFromThirdParty(imdbId) {
   const apiKey = process.env.THEMOVIEDB_API_KEY
 
@@ -20,8 +33,20 @@ async function downloadPosterFromThirdParty(imdbId) {
     throw new Error(`process.env.THEMOVIEDB_API_KEY is undefined`)
   }
 
+  // themoviedb.org could be blacklisted in Internet Service Provider DNS
+  // in some countries. so we use well-tried DNS instead.
+  const [address] = await lookupAddress(`api.themoviedb.org`)
+  const agent = new https.Agent({
+    lookup: (hostname, options, callback) => {
+      callback(null, address, 4)
+    },
+  })
+
   const response = await fetch(
-    `https://api.themoviedb.org/3/find/${imdbId}?api_key=${apiKey}&external_source=imdb_id`
+    `https://api.themoviedb.org/3/find/${imdbId}?api_key=${apiKey}&external_source=imdb_id`,
+    {
+      agent,
+    }
   )
   const status = response.status
   if (status !== 200) {
@@ -42,7 +67,10 @@ async function downloadPosterFromThirdParty(imdbId) {
   }
 
   return fetch(
-    `https://www.themoviedb.org/t/p/w300_and_h450_bestv2/${posterPath}`
+    `https://www.themoviedb.org/t/p/w300_and_h450_bestv2/${posterPath}`,
+    {
+      agent,
+    }
   ).then((response) => response.buffer())
 }
 

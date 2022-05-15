@@ -99,6 +99,7 @@ not supported in ./client/.env file, but available via a shell / docker:
 - IS_AIM_TO_POPULATE_DATABASE
 - THEMOVIEDB_API_KEY
 - AVAILABLE_BYTES_FOR_POSTERS
+- DNS_SERVER_OPTIONAL
 
 # The frontend
 
